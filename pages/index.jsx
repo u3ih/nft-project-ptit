@@ -1,10 +1,10 @@
-import Head from 'next/head'
-import Header from '../components/Header'
-import Hero from '../components/Hero'
-import { useWeb3 } from '@3rdweb/hooks'
-import { useEffect } from 'react'
-import { client } from '../lib/sanityClient'
-import toast, { Toaster } from 'react-hot-toast'
+import Header from '../components/header';
+import Hero from "../components/hero";
+import { useWeb3 } from '@3rdweb/hooks';
+import { useEffect } from 'react';
+import { client } from '../lib/sanityClient';
+import toast, { Toaster } from 'react-hot-toast';
+import React from 'react';
 
 const style = {
   wrapper: ``,
@@ -29,7 +29,6 @@ export default function Home() {
   }
 
   useEffect(() => {
-    console.log("address: ", address);
     if (!address) return;
     (async () => {
       const userDoc = {
