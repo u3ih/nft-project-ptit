@@ -1,5 +1,6 @@
 import '../styles/globals.css'
 import { ThirdwebWeb3Provider } from '@3rdweb/hooks'
+import React from 'react';
 
 /**
  * The chain ID 97 to connect with bsc testnet
@@ -10,6 +11,7 @@ const connectors = {
   injected: {},
 }
 
+// eslint-disable-next-line react/prop-types
 function MyApp({ Component, pageProps }) {
   return (
     <ThirdwebWeb3Provider
