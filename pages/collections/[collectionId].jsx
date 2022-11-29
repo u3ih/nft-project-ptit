@@ -40,8 +40,6 @@ const Collection = () => {
   const [nfts, setNfts] = useState([])
   const [listings, setListings] = useState([])
 
-  //
-
   const nftModule = useMemo(() => {
     if (!provider) return
 
@@ -107,7 +105,6 @@ const Collection = () => {
     fetchCollectionData()
   }, [collectionId])
 
-  console.log(router.query)
   console.log(router.query.collectionId)
   return (
     <div className="overflow-hidden">

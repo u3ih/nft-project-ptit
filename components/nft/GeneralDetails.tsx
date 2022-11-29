@@ -4,10 +4,11 @@ import { MdRefresh } from 'react-icons/md';
 import { RiShareBoxLine } from 'react-icons/ri';
 import { FiMoreVertical } from 'react-icons/fi';
 import { GiShare } from 'react-icons/gi';
-import React from 'react';
+import React, { useEffect } from 'react';
 
 const GeneralDetails = (props: any) => {
   const { selectedNft } = props;
+
   return (
     <div className={"flex"}>
       <div className={"h-36 flex flex-col flex-1 justify-between mb-6"}>
@@ -15,7 +16,7 @@ const GeneralDetails = (props: any) => {
         <div className={"text-3xl font-extrabold"}>{selectedNft?.name}</div>
         <div className={"flex"}>
           <div className={"text-[#8a939b] mr-4"}>
-            Owned by <span className={"text-[#2081e2]"}>e88vault</span>
+            {/*Owned by <span className={"text-[#2081e2]"}>{address}</span>*/}
           </div>
           <div className={"flex items-center text-[#8a939b]"}>
             <AiFillHeart className={"mr-1"} /> 2.3K favorites

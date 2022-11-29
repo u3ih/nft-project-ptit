@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { dummyEvents } from '../../static/dummyEvents';
 import EventItem from './itemActivity/EventItem';
 import React from "react";
-import style from "../nft.module.scss";
+import style from "./nft.module.scss";
 
 const ItemActivity = () => {
   const [toggle, setToggle] = useState(true)

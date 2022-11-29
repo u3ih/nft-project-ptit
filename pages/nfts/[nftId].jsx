@@ -1,4 +1,4 @@
-import Header from '../../components/Header'
+import Header from '../../components/header'
 import { useEffect, useMemo, useState } from 'react'
 import { useWeb3 } from '@3rdweb/hooks'
 import { ThirdwebSDK } from '@3rdweb/sdk'
@@ -7,6 +7,7 @@ import NFTImage from '../../components/nft/NFTImage'
 import GeneralDetails from '../../components/nft/GeneralDetails'
 import ItemActivity from '../../components/nft/ItemActivity'
 import Purchase from '../../components/nft/Purchase'
+import React from "react";
 
 const style = {
   wrapper: `flex flex-col items-center container-lg text-[#e5e8eb]`,
@@ -35,13 +36,13 @@ const Nft = () => {
   // get all NFTs in the collection
   useEffect(() => {
     if (!nftModule) return
-    ;(async () => {
-      const nfts = await nftModule.getAll()
+      ; (async () => {
+        const nfts = await nftModule.getAll()
 
-      const selectedNftItem = nfts.find((nft) => nft.id === router.query.nftId)
+        const selectedNftItem = nfts.find((nft) => nft.id === router.query.nftId)
 
-      setSelectedNft(selectedNftItem)
-    })()
+        setSelectedNft(selectedNftItem)
+      })()
   }, [nftModule])
 
   const marketPlaceModule = useMemo(() => {
@@ -59,9 +60,9 @@ const Nft = () => {
 
   useEffect(() => {
     if (!marketPlaceModule) return
-    ;(async () => {
-      setListings(await marketPlaceModule.getAllListings())
-    })()
+      ; (async () => {
+        setListings(await marketPlaceModule.getAllListings())
+      })()
   }, [marketPlaceModule])
 
   return (
