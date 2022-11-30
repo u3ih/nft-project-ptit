@@ -1,4 +1,4 @@
-import { Marketplace } from "contracts/src/types/contracts";
+import { MarketplaceContractType } from "contracts/src/types/contracts";
 import * as t from "../types";
 
 interface IStateProps {
@@ -20,7 +20,7 @@ const main = (state: IStateProps, action: any) => {
     case t.SET_MARKETPLACE_CONTRACT: {
       return {
         ...state,
-        marketplaceContract: action.payload.marketplaceContract as Marketplace,
+        marketplaceContract: action.payload.marketplaceContract as MarketplaceContractType,
       };
     }
     case t.GET_MARKETPLACE_CONTRACT: {

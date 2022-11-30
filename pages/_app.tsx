@@ -20,8 +20,8 @@ function MyApp({ Component, pageProps }: AppProps) {
       const web3 = await useGetWeb3();
       const accounts = await web3.eth.getAccounts();
       if (accounts.length > 0) {
-        const account = accounts[0];
-        dispatch({ type: t.SET_ADDRESS, payload: { account } });
+        const userAddress = accounts[0];
+        dispatch({ type: t.SET_ADDRESS, payload: { userAddress } });
       } else {
         message.error("Please connect to MetaMask");
       }

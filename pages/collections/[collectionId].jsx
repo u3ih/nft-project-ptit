@@ -1,14 +1,12 @@
 import React, { useEffect, useState, useMemo } from 'react'
 import { useRouter } from 'next/router'
 import Link from 'next/link'
-import { useWeb3 } from '@3rdweb/hooks'
 import { client } from '../../lib/sanityClient'
-import { ThirdwebSDK } from '@3rdweb/sdk'
 import Header from '../../components/header'
 import { CgWebsite } from 'react-icons/cg'
 import { AiOutlineInstagram, AiOutlineTwitter } from 'react-icons/ai'
 import { HiDotsVertical } from 'react-icons/hi'
-import NFTCard from '../../components/nft-card'
+import NFTCard from '../../components/nft/nft-card'
 
 const style = {
   bannerImageContainer: `h-[20vh] w-screen overflow-hidden flex justify-center items-center`,
@@ -34,51 +32,12 @@ const style = {
 
 const Collection = () => {
   const router = useRouter()
-  const { provider } = useWeb3()
   const { collectionId } = router.query
   const [collection, setCollection] = useState({})
   const [nfts, setNfts] = useState([])
   const [listings, setListings] = useState([])
 
-  const nftModule = useMemo(() => {
-    if (!provider) return
 
-    const sdk = new ThirdwebSDK(
-      provider.getSigner(),
-      'https://rinkeby.infura.io/v3/a464b9152d8c466c8a94a514fce8e837'
-    )
-    return sdk.getNFTModule(collectionId)
-  }, [provider])
-
-  // get all NFTs in the collection
-  useEffect(() => {
-    if (!nftModule) return
-      ; (async () => {
-        const nfts = await nftModule.getAll()
-
-        setNfts(nfts)
-      })()
-  }, [nftModule])
-
-  const marketPlaceModule = useMemo(() => {
-    if (!provider) return
-
-    const sdk = new ThirdwebSDK(
-      provider.getSigner(),
-      'https://rinkeby.infura.io/v3/a464b9152d8c466c8a94a514fce8e837'
-    )
-    return sdk.getMarketplaceModule(
-      '0x93A771F7ce845C33381f677489cF21a5964EDD0b'
-    )
-  }, [provider])
-
-  // get all listings in the collection
-  useEffect(() => {
-    if (!marketPlaceModule) return
-      ; (async () => {
-        setListings(await marketPlaceModule.getAllListings())
-      })()
-  }, [marketPlaceModule])
 
   const fetchCollectionData = async (sanityClient = client) => {
     const query = `*[_type == "marketItems" && contractAddress == "${collectionId}" ] {

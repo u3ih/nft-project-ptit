@@ -1,17 +1,19 @@
-import ClientHome from "../components/home";
 import React from "react";
 import ClientMainLayout from "../components/layout/client-layout";
+import CreateNftItem from "../components/create-nft";
 
-export default function Home() {
+const CreateNft = () => {
   return (
-    <ClientHome />
+    <CreateNftItem />
   )
 }
 
-Home.layout = ClientMainLayout;
+CreateNft.layout = ClientMainLayout;
 
 export async function getStaticProps() {
   return {
     props: {}, // will be passed to the page component as props
   }
 }
+
+export default CreateNft;
