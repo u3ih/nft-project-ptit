@@ -1,14 +1,14 @@
-import ClientHome from "../components/home";
 import React from "react";
 import ClientMainLayout from "../components/layout/client-layout";
+import ResellNFT from "../components/resell-nft";
 
-const Home = () => {
+const ResellNft = () => {
   return (
-    <ClientHome />
+    <ResellNFT />
   )
 }
 
-Home.Layout = ClientMainLayout;
+ResellNft.Layout = ClientMainLayout;
 
 export async function getStaticProps() {
   return {
@@ -16,4 +16,4 @@ export async function getStaticProps() {
   }
 }
 
-export default Home;
+export default ResellNft;

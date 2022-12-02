@@ -2,8 +2,8 @@ import React, { useState } from 'react'
 import { ethers } from 'ethers'
 import { useRouter } from 'next/router'
 import axios from 'axios'
-import { useGetMarketplaceContract, useGetNFTStorage } from '../../src/hook'
-import { MarketplaceContractType } from 'contracts/src/types/contracts';
+import { useGetMarketplaceContract, useGetNFTStorage, useGetUserAddress } from '../../src/hook'
+import { Marketplace as MarketplaceContractType } from 'contracts/src/types/contracts';
 import { NFT_STORAGE_KEY } from "../../src/hook/helpers";
 import { NextPage } from 'next';
 
@@ -19,11 +19,10 @@ const slugify = (value: string) => {
 
 const CreateNftItem: NextPage = () => {
   const [fileUrl, setFileUrl] = useState("")
-  const [fileType, setFileType] = useState("")
-  const [file, setFile] = useState()
   const [formInput, updateFormInput] = useState({ price: '', name: '', description: '' })
   const nftStorage = useGetNFTStorage();
   const router = useRouter()
+  const userAddress = useGetUserAddress();
   const marketplaceContract: MarketplaceContractType = useGetMarketplaceContract();
 
   const onChange = async (e: any) => {
@@ -32,13 +31,10 @@ const CreateNftItem: NextPage = () => {
     try {
       const imageMetadata = await nftStorage.storeBlob(new Blob([file]));
       setFileUrl(`https://${imageMetadata}.ipfs.nftstorage.link`);
-      setFileType(file?.type)
-      setFile(file);
     } catch (error) {
       console.log(error);
     }
   }
-  console.log("fileUrl: ", fileUrl)
   const listNFTForSale = async () => {
     const { price, name, description } = formInput
     // Upload NFT to IPFS & Filecoin
@@ -65,14 +61,13 @@ const CreateNftItem: NextPage = () => {
     const priceEther = ethers.utils.parseUnits(price, 'ether')
     let listingPrice = await marketplaceContract.methods.getListingPrice().call();
     listingPrice = listingPrice.toString()
-    await marketplaceContract.methods.createToken(urlNFT, priceEther as any).send({ value: listingPrice })
     console.log("listingPrice: ", listingPrice);
-
+    await marketplaceContract.methods.createToken(urlNFT, priceEther.toString()).send({ from: userAddress, value: listingPrice })
     router.push('/')
   }
 
   return (
-    <div className={"flex justify-center"} >
+    <div className={"flex justify-center max-w-[1240px] m-auto"} >
       <div className="w-1/2 flex flex-col pb-12" >
         <input
           placeholder="Asset Name"

@@ -8,7 +8,7 @@ const CreateNft = () => {
   )
 }
 
-CreateNft.layout = ClientMainLayout;
+CreateNft.Layout = ClientMainLayout;
 
 export async function getStaticProps() {
   return {

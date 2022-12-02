@@ -4,6 +4,7 @@ import React from 'react';
 import { useGetUserAddress, useSetInfoAddress } from '../../src/hook';
 import Header from '../header';
 import Hero from '../hero';
+import ListNFTs from './list-nfts';
 
 
 const style = {
@@ -14,39 +15,11 @@ const style = {
 }
 
 const ClientHome = () => {
-  const setInfoAddress = useSetInfoAddress();
-  const { userAddress } = useGetUserAddress();
-  console.log("userAddress: ", userAddress);
-
-  const welcomeUser = (userName: string, toastHandler = toast) => {
-    toastHandler.success(
-      `Welcome back${userName !== 'Unnamed' ? ` ${userName}` : ''}!`,
-      {
-        style: {
-          background: '#04111d',
-          color: '#fff',
-        },
-      }
-    )
-  }
-
-  useEffect(() => {
-    if (!userAddress) return;
-    (async () => {
-      const userDoc = {
-        _type: 'users',
-        _id: userAddress,
-        userName: 'Unnamed',
-        walletAddress: userAddress,
-      }
-    })()
-  }, [userAddress])
-
   return (
     <div className={style.wrapper}>
       <Toaster position="top-center" reverseOrder={false} />
-      <Header />
       <Hero />
+      <ListNFTs />
     </div>
   )
 }

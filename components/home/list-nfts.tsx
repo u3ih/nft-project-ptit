@@ -15,11 +15,10 @@ const ListNFTs = () => {
     }
     handleLoadNft();
   }, [])
-
+  console.log("nfts: ", nfts);
   if (!nfts.length) return (
     <h2 className="px-20 py-10 text-3xl">No items in marketplace</h2>
   )
-  console.log("nfts: ", nfts);
   return (
     <div className="flex justify-center">
       <div className="px-4" style={{ maxWidth: '1600px' }}>

@@ -1,13 +1,36 @@
 import Image from "next/image";
 import Link from "next/link";
-import { AiOutlineSearch } from "react-icons/ai";
-import { CgProfile } from "react-icons/cg";
 import { MdOutlineAccountBalanceWallet } from "react-icons/md";
 import style from "./header.module.scss";
 import React from "react";
 import UserDropdown from "./user-dropdown";
+import { useGetUserAddress, useGetWeb3 } from "../../src/hook";
+import cls from "classnames";
+import { Button, message } from "antd";
+import { useDispatch } from "react-redux";
+import * as t from "../../src/redux/types";
+import MarketplaceABI from "contracts/artifacts/contracts/Marketplace.sol/Marketplace.json";
+import { marketplaceAddress } from "../../src/common/constant";
 
 const Header = () => {
+  const userAddress = useGetUserAddress();
+  const getWeb3 = useGetWeb3();
+  const dispatch = useDispatch();
+  const handleClickConnectWallet = async () => {
+    const web3 = await getWeb3();
+    if (!web3) {
+      return;
+    }
+    dispatch({
+      type: t.SET_MARKETPLACE_CONTRACT,
+      payload: {
+        marketplaceContract: new web3.eth.Contract(
+          MarketplaceABI.abi as any,
+          marketplaceAddress
+        ),
+      },
+    });
+  }
   return (
     <div className={style.wrapper}>
       <Link href="/">
@@ -16,8 +39,20 @@ const Header = () => {
           <div className={style.logoText}>Hiếu market</div>
         </div>
       </Link>
+      <div className={cls(style.headerItem, "flex items-center")}>
+        {userAddress ? (
+          <span className="text-[12px]">Hello {userAddress}</span>
+        ) : (
+          <Button {...{
+            onClick: handleClickConnectWallet,
+            className: "text-white"
+          }}>
+            Connect metamask
+          </Button>
+        )}
+      </div>
       <div className={style.headerItems}>
-        <Link href="/collections/0x66a576A977b7Bccf510630E0aA5e450EC11361Fa">
+        <Link href="/my-nft">
           <div className={style.headerItem}> Collections </div>
         </Link>
         <div className={style.headerItem}> Stats </div>

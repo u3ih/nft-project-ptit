@@ -1,14 +1,14 @@
-import ClientHome from "../components/home";
 import React from "react";
 import ClientMainLayout from "../components/layout/client-layout";
+import MyAssets from "../components/my-nft";
 
-const Home = () => {
+const MyNft = () => {
   return (
-    <ClientHome />
+    <MyAssets />
   )
 }
 
-Home.Layout = ClientMainLayout;
+MyNft.Layout = ClientMainLayout;
 
 export async function getStaticProps() {
   return {
@@ -16,4 +16,4 @@ export async function getStaticProps() {
   }
 }
 
-export default Home;
+export default MyNft;

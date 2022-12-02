@@ -1,4 +1,4 @@
-import { MarketplaceContractType } from "contracts/src/types/contracts";
+import { Marketplace as MarketplaceContractType } from "contracts/src/types/contracts";
 import * as t from "../types";
 
 interface IStateProps {
