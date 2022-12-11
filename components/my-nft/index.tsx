@@ -9,19 +9,14 @@ import React from "react";
 import { Marketplace as MarketplaceContractType } from 'contracts/src/types/contracts';
 
 const MyAssets = () => {
-  const [nfts, setNfts] = useState<any[]>([])
+  const [nfts, setNfts] = useState<any>([])
   const router = useRouter()
-  const marketplaceContract: MarketplaceContractType = useGetMarketplaceContract();
   const loadMyNfts = useLoadMyNfts();
   useEffect(() => {
-    if (!marketplaceContract) {
-      return;
-    }
     loadNFTs()
-  }, [marketplaceContract])
+  }, [])
   const loadNFTs = async () => {
     const items = await loadMyNfts();
-    console.log("items: ", items);
     setNfts(items)
   }
   function listNFT(nft: any) {
@@ -32,20 +27,23 @@ const MyAssets = () => {
     <h1 className="py-10 px-20 text-3xl">No NFTs owned</h1>
   )
   return (
-    <div className="flex justify-center">
-      <div className="p-4">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-4">
-          {
-            nfts.map((nft, i) => (
-              <div key={i} className="border shadow rounded-xl overflow-hidden">
-                <img src={nft.image} className="rounded" />
-                <div className="p-4 bg-black">
-                  <p className="text-2xl font-bold text-white">Price - {nft.price} Eth</p>
-                  <button className="mt-4 w-full bg-pink-500 text-white font-bold py-2 px-12 rounded" onClick={() => listNFT(nft)}>List</button>
+    <div className="max-w-[1240px] m-auto">
+      <h1 className="pt-[50px] text-[40px] font-semibold">My nft</h1>
+      <div className="flex justify-center">
+        <div className="p-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-4">
+            {
+              nfts?.map((nft: any, i: number) => (
+                <div key={i} className="border shadow rounded-xl overflow-hidden">
+                  <img src={nft.image} className="rounded" />
+                  <div className="p-4 bg-black">
+                    <p className="text-2xl font-bold text-white">Price - {nft.price} Eth</p>
+                    <button className="mt-4 w-full bg-pink-500 text-white font-bold py-2 px-12 rounded" onClick={() => listNFT(nft)}>List</button>
+                  </div>
                 </div>
-              </div>
-            ))
-          }
+              ))
+            }
+          </div>
         </div>
       </div>
     </div>

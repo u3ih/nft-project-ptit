@@ -1,9 +1,11 @@
-import { Marketplace as MarketplaceContractType } from "contracts/src/types/contracts";
+import { Marketplace as MarketplaceContractType, UserID as UserContractType } from "contracts/src/types/contracts";
 import * as t from "../types";
 
 interface IStateProps {
   userAddress?: string;
   marketplaceContract?: any;
+  userContract?: any;
+  userInfo?: any;
 }
 
 const main = (state: IStateProps, action: any) => {
@@ -26,6 +28,28 @@ const main = (state: IStateProps, action: any) => {
     case t.GET_MARKETPLACE_CONTRACT: {
       return {
         marketplaceContract: state?.marketplaceContract,
+      };
+    }
+    case t.SET_USER_CONTRACT: {
+      return {
+        ...state,
+        userContract: action.payload.userContract as UserContractType,
+      };
+    }
+    case t.GET_USER_CONTRACT: {
+      return {
+        userContract: state?.userContract,
+      };
+    }
+    case t.SET_USER_INFO: {
+      return {
+        ...state,
+        userInfo: action.payload.userInfo as UserContractType,
+      };
+    }
+    case t.GET_USER_INFO: {
+      return {
+        userInfo: state?.userInfo,
       };
     }
     default:

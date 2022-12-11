@@ -4,14 +4,32 @@ import { useRouter } from 'next/router'
 import axios from 'axios'
 import { useGetMarketplaceContract, useGetUserAddress } from '../../src/hook'
 import { Marketplace as MarketplaceContractType } from 'contracts/src/types/contracts';
+import {Button, Form, Input, Space, Upload} from "antd";
+import {UploadOutlined} from "@ant-design/icons";
+
+const layout = {
+  labelCol: { span: 4 },
+  wrapperCol: { span: 20 },
+};
+
+/* eslint-disable no-template-curly-in-string */
+const validateMessages = {
+  required: '${label} is required!',
+  types: {
+    email: '${label} is not a valid email!',
+    number: '${label} is not a valid number!',
+  },
+  number: {
+    range: '${label} must be between ${min} and ${max}',
+  },
+};
 
 const ResellNFT = () => {
-  const [formInput, updateFormInput] = useState({ price: '', image: '' })
   const router = useRouter()
   const { id, tokenURI } = router.query
-  const { image, price } = formInput
-  const marketplaceContract: MarketplaceContractType = useGetMarketplaceContract();
+  const getMarketplaceContract = useGetMarketplaceContract();
   const userAddress = useGetUserAddress();
+  const [form] = Form.useForm();
 
   useEffect(() => {
     fetchNFT()
@@ -20,13 +38,14 @@ const ResellNFT = () => {
   const fetchNFT = async () => {
     if (!tokenURI) return
     const meta = await axios.get(tokenURI.toString())
-    updateFormInput(state => ({ ...state, image: meta.data.image }))
+    form.setFieldValue("image", meta.data.image);
   }
 
   const listNFTForSale = async () => {
-    if (!price || !id) return;
-
-    const priceFormatted = ethers.utils.parseUnits(formInput.price, 'ether')
+    const marketplaceContract = await getMarketplaceContract()
+    const {price, image} = form.getFieldsValue();
+    if (!price || !id || !marketplaceContract) return;
+    const priceFormatted = ethers.utils.parseUnits(price, 'ether')
     let listingPrice = await marketplaceContract.methods.getListingPrice().call();
 
     listingPrice = listingPrice.toString()
@@ -35,21 +54,21 @@ const ResellNFT = () => {
   }
 
   return (
-    <div className="flex justify-center">
-      <div className="w-1/2 flex flex-col pb-12">
-        <input
-          placeholder="Asset Price in Eth"
-          className="mt-2 border rounded p-4"
-          onChange={e => updateFormInput({ ...formInput, price: e.target.value })}
-        />
-        {
-          image && (
-            <img className="rounded mt-4" width="350" src={image} />
-          )
-        }
-        <button onClick={listNFTForSale} className="font-bold mt-4 bg-pink-500 text-white rounded p-4 shadow-lg">
-          List NFT
-        </button>
+    <div className="flex justify-center flex-col max-w-[1240px] m-auto items-center min-h-[calc(100vh-57px)]">
+      <div className="w-1/2 flex flex-col pb-12 mt-[40px]">
+        <Form {...layout} name="nest-messages" validateMessages={validateMessages} form={form}>
+          <Form.Item name={'price'} label="Name" rules={[{ required: true }]}>
+            <Input placeholder="Asset Price in Eth"/>
+          </Form.Item>
+              <img className="rounded mt-4" width="350" src={form.getFieldValue("image")} />
+          <Form.Item wrapperCol={{ ...layout.wrapperCol, offset: 8 }}>
+            <Space>
+              <Button onClick={listNFTForSale} type={"primary"} className={"mt-[15px]"}>
+                List NFT
+              </Button>
+            </Space>
+          </Form.Item>
+        </Form>
       </div>
     </div>
   )

@@ -9,7 +9,7 @@ const rootReducer = combineReducers({
 
 const persistConfig = getPersistConfig({
   key: "common",
-  whitelist: ["userAddress", "marketplaceContract"]
+  whitelist: ["userAddress", "marketplaceContract", "userInfo"]
 });
 
 

@@ -5,12 +5,15 @@ import Cookies from "js-cookie";
 import { DOMAIN_CHAIN_CONFIG, NFT_STORAGE_KEY } from "./helpers";
 import { NFTStorage } from "nft.storage";
 import { ethers } from "ethers";
-import { marketplaceAddress } from "../common/constant";
+import {marketplaceAddress, userContractAddress} from "../common/constant";
 import Marketplace from 'contracts/artifacts/contracts/Marketplace.sol/Marketplace.json'
 import axios from "axios";
-import { Marketplace as MarketplaceContractType } from "contracts/src/types/contracts";
+import { Marketplace as MarketplaceContractType, UserID as UserContractType } from "contracts/src/types/contracts";
 import { message } from "antd";
 import { useRouter } from "next/router";
+import MarketplaceABI from "contracts/artifacts/contracts/Marketplace.sol/Marketplace.json";
+import UserABI from "contracts/artifacts/contracts/UserID.sol/UserID.json";
+import {doRequest} from "../common/do-request";
 
 declare let window: any
 
@@ -83,11 +86,24 @@ export const useSetMarketplaceContract = () => {
 }
 
 export const useGetMarketplaceContract = () => {
-    const marketplaceContract = Cookies.get("marketplaceContract") || "";
-    return useSelector(
-        (state: any) => {
-            return state.common.marketplaceContract || marketplaceContract;
-        });
+    const getWeb3 = useGetWeb3();
+
+    return () => {
+        let marketplaceContract;
+        const connect = async () => {
+
+            const web3 = await getWeb3();
+            if (!web3) {
+                return null;
+            }
+            marketplaceContract = await new web3.eth.Contract(
+                MarketplaceABI.abi as any,
+                marketplaceAddress
+            );
+            return marketplaceContract;
+        }
+        return connect();
+    }
 }
 
 export const useGetNFTStorage = () => {
@@ -129,9 +145,13 @@ export const useLoadNfts = () => {
 }
 
 export const useLoadMyNfts = () => {
-    const marketplaceContract = useGetMarketplaceContract();
+    const getMarketplaceContract = useGetMarketplaceContract();
     const userAddress = useGetUserAddress();
     return async () => {
+        const marketplaceContract = await getMarketplaceContract();
+        if(!marketplaceContract) {
+            return;
+        }
         const data = await marketplaceContract.methods.fetchMyNFTs().call({ from: userAddress });
         const items = await Promise.all(data.map(async (i: any) => {
             const tokenURI = await marketplaceContract.methods.tokenURI(i.tokenId).call()
@@ -155,14 +175,78 @@ export const useBuyNft = () => {
     /* needs the user to sign the transaction, so will use Web3Provider and sign it */
     const userAddress = useGetUserAddress();
     const { push } = useRouter();
-    const marketplaceContract: MarketplaceContractType = useGetMarketplaceContract();
+    const getMarketplaceContract = useGetMarketplaceContract();
     return async (nft: { price: any, tokenId: string }) => {
-        if (!nft || !userAddress) {
+        const marketplaceContract = await getMarketplaceContract();
+        if (!nft || !userAddress || !marketplaceContract) {
             return;
         }
         /* user will be prompted to pay the asking proces to complete the transaction */
         const price = ethers.utils.parseUnits(nft.price.toString(), 'ether')
         await marketplaceContract.methods.createMarketSale(nft.tokenId).send({ from: userAddress, value: price as any })
         push("/my-nft");
+    }
+}
+
+export const useSetUserContract = () => {
+    const dispatch = useDispatch();
+    return (userContract: any) => {
+        dispatch({
+            type: t.SET_USER_CONTRACT,
+            payload: userContract
+        });
+        Cookies.set("userContract", userContract);
+    }
+
+}
+
+export const useGetUserContract = () => {
+    const getWeb3 = useGetWeb3();
+    return async () => {
+        const web3 = await getWeb3();
+        if (!web3) {
+            return;
+        }
+        const userContract = new web3.eth.Contract(
+            UserABI.abi as any,
+            userContractAddress
+        );
+        return userContract;
+    }
+}
+
+export const useSetUserData = () => {
+    const dispatch = useDispatch();
+    return (userInfo: string) => {
+        dispatch({
+            type: t.SET_USER_INFO,
+            payload: userInfo
+        });
+        Cookies.set("userInfo", JSON.stringify(userInfo));
+    }
+}
+
+export const useGetUserData = () => {
+    const userInfo = Cookies.get("userInfo") || "";
+    return useSelector(
+        (state: any) => {
+            const data = state.common.userInfo || userInfo;
+            const result = JSON.parse(data);
+            return result;
+        });
+}
+
+export const useHandleFetchUserDataByAddress = () => {
+    const setUserInfo = useSetUserData();
+    return async (userAddress: string) => {
+        const networkdata = {
+            url: "users/find-or-create",
+            body: {
+                userAddress
+            }
+        }
+        const userLogin = await doRequest(networkdata, "post");
+        Cookies.set("userToken", userLogin?.access_token);
+        setUserInfo(userLogin);
     }
 }

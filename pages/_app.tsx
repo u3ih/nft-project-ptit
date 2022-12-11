@@ -2,40 +2,31 @@ import '../styles/globals.css'
 import React, { useEffect } from 'react';
 import { PersistGate } from "redux-persist/integration/react";
 import { useDispatch, useStore } from "react-redux";
-import * as t from "../src/redux/types";
 import { message } from "antd";
-import MarketplaceABI from "contracts/artifacts/contracts/Marketplace.sol/Marketplace.json";
-import { marketplaceAddress } from "../src/common/constant";
-import { useGetUserAddress, useGetWeb3 } from "../src/hook";
+import {
+  useGetUserAddress,
+  useGetWeb3,
+  useHandleFetchUserDataByAddress,
+  useSetMarketplaceContract,
+  useSetUserContract
+} from "../src/hook";
 import { AppProps } from "next/app";
 import { wrapper } from '../src/redux/store';
 
 const MyComponent = ({ Component, pageProps }: any) => {
-  const getWeb3 = useGetWeb3();
-  const dispatch = useDispatch();
   const userAddress = useGetUserAddress();
+  const fetchUserDataByAddress = useHandleFetchUserDataByAddress();
+
   useEffect(() => {
     const connect = async () => {
-      const web3 = await getWeb3();
       if (!userAddress) {
         message.error("Please connect to MetaMask");
         return;
       }
-      if (!web3) {
-        return;
-      }
-      dispatch({
-        type: t.SET_MARKETPLACE_CONTRACT,
-        payload: {
-          marketplaceContract: new web3.eth.Contract(
-            MarketplaceABI.abi as any,
-            marketplaceAddress
-          ),
-        },
-      });
+      await fetchUserDataByAddress(userAddress);
     }
     connect();
-  }, []);
+  }, [userAddress, fetchUserDataByAddress]);
   return (
     <Component {...pageProps} />
   )

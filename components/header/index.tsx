@@ -45,7 +45,8 @@ const Header = () => {
         ) : (
           <Button {...{
             onClick: handleClickConnectWallet,
-            className: "text-white"
+            className: "text-white",
+            type: "primary"
           }}>
             Connect metamask
           </Button>
