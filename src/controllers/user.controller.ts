@@ -9,9 +9,9 @@ import {
 import {inject, service} from '@loopback/core';
 import { repository } from '@loopback/repository';
 import {
-  get,
-  post,
-  requestBody,
+  get, HttpErrors, param,
+  post, put,
+  requestBody, RestBindings,
 } from '@loopback/rest';
 import { SecurityBindings, securityId, UserProfile } from '@loopback/security';
 import {AuthenticationUserService} from "../services/user.service";
@@ -42,9 +42,6 @@ export class UserController {
         description: 'Return current user',
         content: {
           'application/json': {
-            schema: {
-              type: 'string',
-            },
           },
         },
       },
@@ -53,8 +50,8 @@ export class UserController {
   async whoAmI(
     @inject(SecurityBindings.USER)
     currentUserProfile: UserProfile,
-  ): Promise<string> {
-    return currentUserProfile[securityId];
+  ): Promise<any> {
+    return await this.userRepository.findById(currentUserProfile?.id);
   }
 
   @authenticate('jwt')
@@ -64,9 +61,6 @@ export class UserController {
         description: 'Return current user',
         content: {
           'application/json': {
-            schema: {
-              type: 'string',
-            },
           },
         },
       },
@@ -79,9 +73,41 @@ export class UserController {
     return await this.userRepository.find();
   }
 
+  @authenticate('jwt')
+  @put('/users/update-info', {
+    responses: {
+      '200': {
+        description: 'Return current user',
+        content: {
+          'application/json': {
+          },
+        },
+      },
+    },
+  })
+  async updateUser(
+      @inject(SecurityBindings.USER)
+          currentUserProfile: UserProfile,
+      @requestBody() user: User
+  ): Promise<any> {
+      // @ts-ignore
+      delete user.userAddress;
+    return await this.userRepository.updateById(currentUserProfile?.id, user);
+  }
+
   @post('/users/find-or-create')
-  async findOrCreateUser(@requestBody() user: User) {
-    const { userAddress } = user;
+  async findOrCreateUser(
+      @requestBody({
+          content: {
+            "application/json": {
+              },
+            },
+      }) user: any
+  ) {
+    const { userAddress } = user || {};
+    if(!userAddress) {
+      throw new HttpErrors.NotFound("Not found user");
+    }
     let profileUser = await this.userRepository.findOne({ where: { userAddress } });
     if (!profileUser) {
       profileUser = await this.userRepository.create({ userAddress });

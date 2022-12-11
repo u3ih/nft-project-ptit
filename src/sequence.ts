@@ -4,6 +4,7 @@ import {
   SequenceHandler,
   FindRoute,
   ParseParams,
+  InvokeMiddleware,
   InvokeMethod,
   Send,
   Reject,
@@ -22,11 +23,15 @@ export class MySequence implements SequenceHandler {
     @inject(SequenceActions.REJECT) public reject: Reject,
     @inject(AuthenticationBindings.AUTH_ACTION)
     protected authenticateRequest: AuthenticateFn,
+    @inject(SequenceActions.INVOKE_MIDDLEWARE, { optional: true })
+    protected invokeMiddleware: InvokeMiddleware = () => false,
   ) { }
 
   async handle(context: RequestContext) {
     try {
       const { request, response } = context;
+      const finished = await this.invokeMiddleware(context);
+      if (finished) return;
       const route = this.findRoute(request);
 
       await this.authenticateRequest(request);
