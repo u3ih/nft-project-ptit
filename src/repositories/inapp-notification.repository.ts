@@ -8,6 +8,7 @@ import {
 import {User} from "../models";
 import {UserRepository} from "./users.repository";
 import {InappNotification, InappNotificationRelations} from "../models/inapp-notification.model";
+import {MongoDbDataSource} from "../datasources";
 
 export class InappNotificationRepository extends DefaultCrudRepository<
     InappNotification,
@@ -20,11 +21,11 @@ export class InappNotificationRepository extends DefaultCrudRepository<
         >;
 
     constructor(
-        @inject('datasources.db') protected db: juggler.DataSource,
+        @inject('datasources.mongoDb') dataSource: MongoDbDataSource,
         @repository.getter('UserRepository')
             userRepositoryGetter: Getter<UserRepository>,
     ) {
-        super(InappNotification, db);
+        super(InappNotification, dataSource);
         this.user = this.createBelongsToAccessorFor(
             'user',
             userRepositoryGetter,

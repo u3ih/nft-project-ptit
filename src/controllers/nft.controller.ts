@@ -6,10 +6,14 @@ import {
 import {inject, service} from '@loopback/core';
 import { repository } from '@loopback/repository';
 import {
-    get,
+    get, post, requestBody,
 } from '@loopback/rest';
 import { SecurityBindings, securityId, UserProfile } from '@loopback/security';
 import {NFTRepository} from "../repositories/nft.repository";
+import {InappNotification} from "../models/inapp-notification.model";
+import {NFT} from "../models/nft.model";
+
+const ObjectId = require("objectid")
 
 export class NFTController {
     constructor(
@@ -27,9 +31,6 @@ export class NFTController {
                 description: 'Return current user',
                 content: {
                     'application/json': {
-                        schema: {
-                            type: 'string',
-                        },
                     },
                 },
             },
@@ -49,9 +50,6 @@ export class NFTController {
                 description: 'Return current user',
                 content: {
                     'application/json': {
-                        schema: {
-                            type: 'string',
-                        },
                     },
                 },
             },
@@ -78,9 +76,6 @@ export class NFTController {
                 description: 'Return current user',
                 content: {
                     'application/json': {
-                        schema: {
-                            type: 'string',
-                        },
                     },
                 },
             },
@@ -93,4 +88,23 @@ export class NFTController {
         return await this.nftRepository.find();
     }
 
+    @authenticate('jwt')
+    @post('/nfts', {
+        responses: {
+            '200': {
+                description: 'create nft',
+                content: {
+                    'application/json': {
+                    },
+                },
+            },
+        },
+    })
+    async createMyNFT(
+        @inject(SecurityBindings.USER)
+            currentUserProfile: UserProfile,
+        @requestBody() newNft: Omit<NFT, "id">
+    ): Promise<any> {
+        return await this.nftRepository.create({...newNft, userId: currentUserProfile?.id});
+    }
 }

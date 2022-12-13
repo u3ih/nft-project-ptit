@@ -28,12 +28,17 @@ export class NFT extends Entity {
     owner: string;
 
     @belongsTo(() => User)
-    userId: number;
+    userId: string;
 
     @property({
         type: 'string',
     })
     price: string;
+
+    @property({
+        type: 'string',
+    })
+    timeEndAuction: string;
 
     @property({
         type: 'boolean',
@@ -51,6 +56,21 @@ export class NFT extends Entity {
         type: 'string',
     })
     urlNFT: string;
+
+    @property({
+        type: 'string',
+    })
+    blockHash: string;
+    
+    @property({
+        type: 'number',
+    })
+    blockNumber: number;
+
+    @property({
+        type: 'string',
+    })
+    transactionHash: string;
 
     constructor(data?: Partial<NFT>) {
         super(data);

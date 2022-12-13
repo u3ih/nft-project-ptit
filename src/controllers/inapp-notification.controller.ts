@@ -25,12 +25,9 @@ export class InappNotificationController {
     @post('/notifications', {
         responses: {
             '200': {
-                description: 'Return current user',
+                description: 'create noti',
                 content: {
                     'application/json': {
-                        schema: {
-                            type: 'string',
-                        },
                     },
                 },
             },
@@ -55,12 +52,9 @@ export class InappNotificationController {
     @get('/notifications/me', {
         responses: {
             '200': {
-                description: 'Return current user',
+                description: 'get notification',
                 content: {
                     'application/json': {
-                        schema: {
-                            type: 'string',
-                        },
                     },
                 },
             },
@@ -77,12 +71,9 @@ export class InappNotificationController {
     @put('/notifications/{id}', {
         responses: {
             '200': {
-                description: 'Return current user',
+                description: 'update notification',
                 content: {
                     'application/json': {
-                        schema: {
-                            type: 'string',
-                        },
                     },
                 },
             },
@@ -100,12 +91,9 @@ export class InappNotificationController {
     @get('/notifications', {
         responses: {
             '200': {
-                description: 'Return current user',
+                description: 'get all noti',
                 content: {
                     'application/json': {
-                        schema: {
-                            type: 'string',
-                        },
                     },
                 },
             },

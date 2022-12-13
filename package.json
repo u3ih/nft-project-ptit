@@ -61,7 +61,8 @@
     "jsonwebtoken": "^8.5.1",
     "lodash": "^4.17.21",
     "loopback-connector-mongodb": "^7.0.0-alpha.1",
-    "path": "^0.12.7"
+    "path": "^0.12.7",
+    "objectid": "^3.2.1"
   },
   "devDependencies": {
     "@loopback/build": "^9.0.5",
