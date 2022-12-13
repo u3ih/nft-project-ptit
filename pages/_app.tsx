@@ -16,6 +16,13 @@ import { wrapper } from '../src/redux/store';
 const MyComponent = ({ Component, pageProps }: any) => {
   const userAddress = useGetUserAddress();
   const fetchUserDataByAddress = useHandleFetchUserDataByAddress();
+  const getWeb3 = useGetWeb3();
+  useEffect(() => {
+    const reConnect = async () => {
+      await getWeb3();
+    }
+    reConnect();
+  })
 
   useEffect(() => {
     const connect = async () => {

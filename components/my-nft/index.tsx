@@ -20,7 +20,6 @@ const MyAssets = () => {
     setNfts(items)
   }
   function listNFT(nft: any) {
-    console.log('nft:', nft)
     router.push(`/resell-nft?id=${nft.tokenId}&tokenURI=${nft.tokenURI}`)
   }
   if (!nfts.length) return (

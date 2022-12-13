@@ -1,14 +1,14 @@
 import React, { useState } from 'react'
-import { ethers } from 'ethers'
 import { useRouter } from 'next/router'
 import axios from 'axios'
-import { useGetMarketplaceContract, useGetNFTStorage, useGetUserAddress } from '../../src/hook'
-import { Marketplace as MarketplaceContractType } from 'contracts/src/types/contracts';
+import { useGetNFTStorage, useGetUserAddress } from '../../src/hook'
 import { NFT_STORAGE_KEY } from "../../src/hook/helpers";
 import { NextPage } from 'next';
-import {Button, Form, Input, message, Space, Upload} from "antd";
+import {Button, DatePicker, Form, Input, message, Space, Switch, Upload} from "antd";
 import {UploadOutlined} from "@ant-design/icons";
 import { Typography } from 'antd';
+import {useCreateNft} from "../../src/hook/nft-hook";
+import dayjs from "dayjs";
 
 const { Title } = Typography;
 
@@ -33,15 +33,13 @@ const CreateNftItem: NextPage = () => {
   const [fileUrl, setFileUrl] = useState("")
   const [form] = Form.useForm();
   const nftStorage = useGetNFTStorage();
-  const router = useRouter()
-  const userAddress = useGetUserAddress();
-  const getMarketplaceContract = useGetMarketplaceContract();
-  const listNFTForSale = async (isAuction = false) => {
-    const marketplaceContract = await getMarketplaceContract();
-    if(!marketplaceContract) {
-      return;
-    }
-    const { price, name, description } = form.getFieldsValue();
+  const router = useRouter();
+  const createNft = useCreateNft();
+  const isAuction = Form.useWatch("isAuction", form);
+  const listNFTForSale = async () => {
+
+    const { price, name, description, isAuction, duringMinute } = form.getFieldsValue();
+    const timeEndAuction = dayjs().add(duringMinute, "m").valueOf();
     // Upload NFT to IPFS & Filecoin
     let metadata: any;
     await axios({
@@ -51,6 +49,8 @@ const CreateNftItem: NextPage = () => {
         name,
         description,
         image: fileUrl,
+        isAuction,
+        timeEndAuction,
       },
       headers: { 'Authorization': `Bearer ${NFT_STORAGE_KEY}` }
     }).then(function (response) {
@@ -62,23 +62,25 @@ const CreateNftItem: NextPage = () => {
     const urlNFT = `https://${metadata?.data?.value?.cid}.ipfs.nftstorage.link`
 
     /* next, create the item */
-    const priceEther = ethers.utils.parseUnits(price, 'ether')
-    let listingPrice = await marketplaceContract.methods.getListingPrice().call();
-    listingPrice = listingPrice.toString()
-    if(!isAuction) {
-      await marketplaceContract.methods.createTokenSale(urlNFT, priceEther.toString()).send({ from: userAddress, value: listingPrice })
-    } else {
-      await marketplaceContract.methods.createTokenAuction(urlNFT, priceEther.toString()).send({ from: userAddress, value: listingPrice })
+    const newNft = {
+      urlNFT,
+      name,
+      description,
+      price,
+      isAuction,
+      timeEndAuction,
     }
+    await createNft(newNft)
     router.push('/')
   }
 
   const propsUpload = {
     name: 'file',
+    maxCount: 1,
     action: async (file: any) => {
         const imageMetadata = await nftStorage.storeBlob(new Blob([file]));
         setFileUrl(`https://${imageMetadata}.ipfs.nftstorage.link`);
-        return file;
+        return `https://${imageMetadata}.ipfs.nftstorage.link`;
     },
     onChange(info: any) {
       if (info.file.status !== 'uploading') {
@@ -98,31 +100,36 @@ const CreateNftItem: NextPage = () => {
           <Form.Item name={'name'} label="Name" rules={[{ required: true }]}>
             <Input placeholder="Asset Name"/>
           </Form.Item>
-          <Form.Item name={'price'} label="Price">
+          <Form.Item name={'price'} label="Price" rules={[{ required: true }]}>
             <Input placeholder="Asset price"/>
           </Form.Item>
           <Form.Item name={"description"} label="Description">
             <Input.TextArea placeholder="Asset description"/>
           </Form.Item>
+          <Form.Item name={'isAuction'} label="Auction">
+            <Switch checkedChildren="Auction" unCheckedChildren="Auction" defaultChecked={false}/>
+          </Form.Item>
+          {isAuction && (
+              <Form.Item name={'duringMinute'} label="During time">
+                <Input placeholder={"minutes"}/>
+              </Form.Item>
+          )}
           <Form.Item name={"image"} label="Image">
             <Upload {...{
               ...propsUpload
             }}>
               <Button icon={<UploadOutlined />}>Click to Upload</Button>
             </Upload>
+            {
+                fileUrl && (
+                    <img className="rounded mt-4" width="200" src={fileUrl} />
+                )
+            }
           </Form.Item>
-          {
-              fileUrl && (
-                  <img className="rounded mt-4" width="350" src={fileUrl} />
-              )
-          }
           <Form.Item wrapperCol={{ ...layout.wrapperCol, offset: 8 }}>
             <Space>
               <Button onClick={() => listNFTForSale()} type={"primary"} >
                 Create NFT
-              </Button>
-              <Button onClick={() => listNFTForSale(true)} type={"primary"} >
-                Create Auction NFT
               </Button>
             </Space>
           </Form.Item>

@@ -2,35 +2,32 @@ import Image from "next/image";
 import Link from "next/link";
 import { MdOutlineAccountBalanceWallet } from "react-icons/md";
 import style from "./header.module.scss";
-import React from "react";
+import React, {useState} from "react";
 import UserDropdown from "./user-dropdown";
-import { useGetUserAddress, useGetWeb3 } from "../../src/hook";
+import {useGetUserAddress, useGetUserData, useGetWeb3} from "../../src/hook";
 import cls from "classnames";
-import { Button, message } from "antd";
+import {Button, Drawer, message} from "antd";
 import { useDispatch } from "react-redux";
 import * as t from "../../src/redux/types";
 import MarketplaceABI from "contracts/artifacts/contracts/Marketplace.sol/Marketplace.json";
 import { marketplaceAddress } from "../../src/common/constant";
 
 const Header = () => {
-  const userAddress = useGetUserAddress();
   const getWeb3 = useGetWeb3();
-  const dispatch = useDispatch();
+  const userInfo = useGetUserData();
   const handleClickConnectWallet = async () => {
-    const web3 = await getWeb3();
-    if (!web3) {
-      return;
-    }
-    dispatch({
-      type: t.SET_MARKETPLACE_CONTRACT,
-      payload: {
-        marketplaceContract: new web3.eth.Contract(
-          MarketplaceABI.abi as any,
-          marketplaceAddress
-        ),
-      },
-    });
+    await getWeb3();
   }
+  const [open, setOpen] = useState(false);
+
+  const showDrawer = () => {
+    setOpen(true);
+  };
+
+  const onClose = () => {
+    setOpen(false);
+  };
+
   return (
     <div className={style.wrapper}>
       <Link href="/">
@@ -40,9 +37,7 @@ const Header = () => {
         </div>
       </Link>
       <div className={cls(style.headerItem, "flex items-center")}>
-        {userAddress ? (
-          <span className="text-[12px]">Hello {userAddress}</span>
-        ) : (
+        {!userInfo?.id && (
           <Button {...{
             onClick: handleClickConnectWallet,
             className: "text-white",
@@ -54,18 +49,28 @@ const Header = () => {
       </div>
       <div className={style.headerItems}>
         <Link href="/my-nft">
-          <div className={style.headerItem}> Collections </div>
+          <div className={style.headerItem}> My Nfts </div>
         </Link>
-        <div className={style.headerItem}> Stats </div>
+        <div className={style.headerItem}> Auction Nfts </div>
         <div className={style.headerItem}> Resources </div>
         <div className={style.headerItem}>
-          <Link href="/create-my-nft">Create </Link>
+          <Link href="/create-my-nft">Create Nft</Link>
         </div>
         <div className={style.headerIcon}>
           <UserDropdown />
         </div>
         <div className={style.headerIcon}>
-          <MdOutlineAccountBalanceWallet color={"white"} />
+          <Drawer
+              title="Wallet Drawer"
+              placement={"right"}
+              closable={false}
+              onClose={onClose}
+              open={open}
+          >
+            <p>Số dư của bạn là</p>
+            <p>10000000000000 VND</p>
+          </Drawer>
+          <MdOutlineAccountBalanceWallet color={"white"} onClick={showDrawer}/>
         </div>
       </div>
     </div>

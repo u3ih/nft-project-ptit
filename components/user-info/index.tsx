@@ -1,5 +1,5 @@
 import {Button, DatePicker, Form, Input, notification} from "antd";
-import moment from "moment";
+import dayjs from "dayjs";
 import {useGetUserAddress, useGetUserContract, useGetUserData, useSetUserData} from "../../src/hook";
 import React from "react";
 import {doRequest} from "../../src/common/do-request";
@@ -37,7 +37,7 @@ const UserInfoClient = () => {
       } else {
         notification.success({message: "Success"})
       }
-      setUserInfo(newUser);
+      setUserInfo({...userInfo, ...newUser});
     } catch (e) {
       console.log("error: ", e)
     }
@@ -45,7 +45,8 @@ const UserInfoClient = () => {
 
   return (
     <div className={"max-w-[1240px] pt-[50px] m-auto"}>
-      <Form form={form} name="dynamic_rule" initialValues={{...userInfo, dateOfBirth: moment(userInfo?.dateOfBirth)}}>
+      <h1 className={"mb-[50px] text-[28px]"}>Your wallet address: {userInfo?.userAddress}</h1>
+      <Form form={form} name="dynamic_rule" initialValues={{...userInfo, dateOfBirth: userInfo?.dateOfBirth && dayjs(userInfo?.dateOfBirth)}}>
         <Form.Item
           {...formItemLayout}
           name="username"
