@@ -5,10 +5,10 @@ import { useGetNFTStorage, useGetUserAddress } from '../../src/hook'
 import { NFT_STORAGE_KEY } from "../../src/hook/helpers";
 import { NextPage } from 'next';
 import {Button, DatePicker, Form, Input, message, Space, Switch, Upload} from "antd";
-import {UploadOutlined} from "@ant-design/icons";
 import { Typography } from 'antd';
 import {useCreateNft} from "../../src/hook/nft-hook";
 import dayjs from "dayjs";
+import {UploadOutlined} from "@ant-design/icons";
 
 const { Title } = Typography;
 
@@ -69,6 +69,7 @@ const CreateNftItem: NextPage = () => {
       price,
       isAuction,
       timeEndAuction,
+      fileUrl,
     }
     await createNft(newNft)
     router.push('/')

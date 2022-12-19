@@ -3,9 +3,7 @@ import { ethers } from 'ethers'
 import { useRouter } from 'next/router'
 import axios from 'axios'
 import { useGetMarketplaceContract, useGetUserAddress } from '../../src/hook'
-import { Marketplace as MarketplaceContractType } from 'contracts/src/types/contracts';
 import {Button, Form, Input, Space, Upload} from "antd";
-import {UploadOutlined} from "@ant-design/icons";
 
 const layout = {
   labelCol: { span: 4 },

@@ -18,7 +18,7 @@ const ClientHome = () => {
   return (
     <div className={style.wrapper}>
       <Toaster position="top-center" reverseOrder={false} />
-      <Hero />
+      {/*<Hero />*/}
       <ListNFTs />
     </div>
   )

@@ -35,7 +35,6 @@ const menu = (
 
 const UserDropdown: React.FC = () => {
     const userInfo = useGetUserData();
-    console.log("userInfo: ", userInfo);
     return (
         <Dropdown overlay={menu}>
             <div className={"flex gap-[10px] justify-center items-center"}>

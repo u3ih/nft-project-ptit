@@ -227,7 +227,7 @@ export const useSetUserData = () => {
 }
 
 export const useGetUserData = () => {
-    const userInfo = Cookies.get("userInfo") || "";
+    const userInfo = Cookies.get("userInfo") || "{}";
     return useSelector(
         (state: any) => {
             const data = state.common.userInfo || userInfo;

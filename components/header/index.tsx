@@ -32,7 +32,7 @@ const Header = () => {
     <div className={style.wrapper}>
       <Link href="/">
         <div className={style.logoContainer}>
-          <Image src={"/assets/images/opensea.png"} height={40} width={40} />
+          <Image src={"/assets/images/opensea.png"} height={40} width={40} alt={"img"}/>
           <div className={style.logoText}>Hiếu market</div>
         </div>
       </Link>
