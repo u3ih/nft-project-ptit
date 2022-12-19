@@ -30,5 +30,6 @@ export class InappNotificationRepository extends DefaultCrudRepository<
             'user',
             userRepositoryGetter,
         );
+        this.registerInclusionResolver("user", this.user.inclusionResolver);
     }
 }

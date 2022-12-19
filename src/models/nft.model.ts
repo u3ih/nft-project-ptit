@@ -27,7 +27,7 @@ export class NFT extends Entity {
     })
     owner: string;
 
-    @belongsTo(() => User)
+    @belongsTo(() => User, {name: 'user'})
     userId: string;
 
     @property({
@@ -50,7 +50,7 @@ export class NFT extends Entity {
         type: 'boolean',
         default: false
     })
-    isAuction: object;
+    isAuction: boolean;
 
     @property({
         type: 'string',

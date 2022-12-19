@@ -26,7 +26,7 @@ export class InappNotification extends Entity {
     })
     createdTime: Date;
 
-    @belongsTo(() => User)
+    @belongsTo(() => User, {name: 'user'})
     userId: string;
 
     @property({

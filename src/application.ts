@@ -21,8 +21,13 @@ import { ServiceMixin } from '@loopback/service-proxy';
 import { MongoDbDataSource } from './datasources';
 import { MySequence } from './sequence';
 import {AuthenticationUserService} from "./services";
+import {STORAGE_DIRECTORY} from "./keys";
 export { ApplicationConfig };
 var path = require('path');
+const UPLOAD_URL_PATH = "/upload";
+const getPathUpload = (): string => {
+  return "public/upload";
+};
 
 export class MyAppApplication extends BootMixin(
   ServiceMixin(RepositoryMixin(RestApplication)),
@@ -32,10 +37,10 @@ export class MyAppApplication extends BootMixin(
 
     // Set up the custom sequence
     this.sequence(MySequence);
-
     // Set up default home page
     this.static('/', path.join(__dirname, '../public'));
-
+    this.static(UPLOAD_URL_PATH, getPathUpload());
+    this.configureFileUpload();
     // Customize @loopback/rest-explorer configuration here
     this.configure(RestExplorerBindings.COMPONENT).to({
       path: '/explorer',
@@ -49,6 +54,16 @@ export class MyAppApplication extends BootMixin(
         // Customize ControllerBooter Conventions here
         dirs: ['controllers'],
         extensions: ['.controller.js'],
+        nested: true,
+      },
+      // socketioControllers: {
+      //   dirs: ["ws-controllers"],
+      //   extensions: [".controller.js", ".controller.ts"],
+      //   nested: true,
+      // },
+      datasources: {
+        dirs: ["datasources"],
+        extensions: [".datasource.js", ".datasource.ts"],
         nested: true,
       },
     };
@@ -65,5 +80,9 @@ export class MyAppApplication extends BootMixin(
     this.bind(UserServiceBindings.USER_SERVICE).toClass(AuthenticationUserService);
     //new
     // this.bind(UserServiceBindings.USER_SERVICE).toClass(MyUserService);
+  }
+  protected configureFileUpload() {
+    const destination: string = "public/upload";
+    this.bind(STORAGE_DIRECTORY).to(destination);
   }
 }

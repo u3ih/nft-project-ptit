@@ -11,7 +11,7 @@ import {UserRepository} from "./users.repository";
 import {MongoDbDataSource} from "../datasources";
 
 export class NFTRepository extends DefaultCrudRepository<NFT, typeof NFT.prototype.id, NFTRelations> {
-    public readonly user: BelongsToAccessor<User,typeof User.prototype.id>;
+    public user: BelongsToAccessor<User,typeof User.prototype.id>;
 
     constructor(
         @inject('datasources.mongoDb') dataSource: MongoDbDataSource,
@@ -23,5 +23,6 @@ export class NFTRepository extends DefaultCrudRepository<NFT, typeof NFT.prototy
             'user',
             userRepositoryGetter,
         );
+        this.registerInclusionResolver("user", this.user.inclusionResolver);
     }
 }

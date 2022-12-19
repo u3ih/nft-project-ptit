@@ -3,3 +3,4 @@ dist
 *.js.map
 *.js
 *.d.ts
+public/upload
