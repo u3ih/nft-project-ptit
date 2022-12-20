@@ -20,3 +20,7 @@ a {
 .client-main-layout-children-wrap {
   /* background-color: #ffffff; */
 }
+
+p {
+  margin: 0;
+}

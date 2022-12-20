@@ -1,64 +1,42 @@
-import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
-import { BiHeart } from 'react-icons/bi'
 import React from "react";
+import {useBuyNft, useGetUserData} from "../../src/hook";
+import styles from "./nft.module.scss";
+import {Avatar} from "antd";
+import {UserOutlined} from "@ant-design/icons";
+import {useRouter} from "next/router";
 
-const NFTCard = (props: any) => {
-  const [isListed, setIsListed] = useState(false)
-  const [price, setPrice] = useState(0)
-  const { push } = useRouter();
-  const { nftItem, title, listings } = props;
+const NftCard = (props: {nft: any, hideBuyBtn?: boolean, avatarOwner: string, showReListNftBtn?: string}) => {
+  const {nft, avatarOwner, hideBuyBtn = false, showReListNftBtn = false} = props;
+  const buyNft = useBuyNft();
+    const router = useRouter()
 
-  useEffect(() => {
-    const listing = listings.find((listing: any) => listing.asset.id === nftItem.id)
-    if (listing) {
-      setIsListed(true)
-      setPrice(listing.buyoutCurrencyValuePerToken.displayValue)
+    const listNFT = (nft: any) => {
+        router.push(`/resell-nft?id=${nft.tokenId}&tokenURI=${nft.tokenURI}`)
     }
-  }, [listings, nftItem])
-
   return (
-    <div
-      className={"bg-[#303339] flex-auto w-[14rem] h-[22rem] my-10 mx-5 rounded-2xl overflow-hidden cursor-pointer"}
-      onClick={() => {
-        push({
-          pathname: `/nfts/${nftItem.id}`,
-          query: { isListed: isListed },
-        })
-      }}
-    >
-      <div className={"h-2/3 w-full overflow-hidden flex justify-center items-center"}>
-        <img src={nftItem.image} alt={nftItem.name} className={"w-full object-cover"} />
-      </div>
-      <div className={"p-3"}>
-        <div className={"flex justify-between text-[#e4e8eb] drop-shadow-xl"}>
-          <div className={"flex-0.6 flex-wrap"}>
-            <div className={"font-semibold text-sm text-[#8a939b]"}>{title}</div>
-            <div className={"font-bold text-lg mt-2"}>{nftItem.name}</div>
-          </div>
-          {isListed && (
-            <div className={"flex-0.4 text-right"}>
-              <div className={"font-semibold text-sm text-[#8a939b]"}>Price</div>
-              <div className={"flex items-center text-xl font-bold mt-2"}>
-                <img
-                  src="https://storage.opensea.io/files/6f8e2979d428180222796ff4a33ab929.svg"
-                  alt="eth"
-                  className={"h-5 mr-2"}
-                />
-                {price}
+        <div className={styles["wrapper-nft-card"]}>
+          <div className="max-h-[300px] flex items-center max-w-full  relative mb-[20px]">
+            <img {...{
+              src: nft?.fileUrl ?? "/assets/images/default-nft-img.webp",
+              className: "object-contain max-w-full overflow-hidden rounded-[10px]"
+            }} />
+              <div className={"absolute left-[10px] -bottom-[20px]"}>
+                  <Avatar size={48} src={avatarOwner} icon={<UserOutlined />}/>
               </div>
+          </div>
+          <div className={"flex gap-[10px] justify-between pb-[10px] pt-[15px]"}>
+            <div className="">
+              <p className="text-2xl font-semibold text-darker leading-[1]">{nft?.name} <span className={"text-[#666666] text-[14px]"}>#{nft?.tokenId || "TokenId"}</span></p>
+              {/*<p className="text-gray-400 mt-[4px]">{nft?.description}</p>*/}
+              <p className="text-gray-400 mt-[8px]">{nft?.price} ETH</p>
             </div>
-          )}
+            <div className="">
+              {!hideBuyBtn && <button className="mt-4 w-full bg-[#ff9614de] text-white font-bold py-2 px-12 rounded-[10px] border-0 hover:cursor-pointer hover:opacity-50 transition ease-in-out duration-300" onClick={() => buyNft(nft)}>Mua</button>}
+            </div>
+          </div>
+            {showReListNftBtn && <button className="mt-4 w-full bg-[#ff9614de] text-white font-bold py-2 px-12 rounded-[10px] border-0 hover:cursor-pointer hover:opacity-50 transition ease-in-out duration-300" onClick={() => listNFT(nft)}>Mở bán</button>}
         </div>
-        <div className={"text-[#8a939b] font-bold flex items-center w-full justify-end mt-3"}>
-          <span className={"text-xl mr-2"}>
-            <BiHeart />
-          </span>{' '}
-          {nftItem.likes}
-        </div>
-      </div>
-    </div>
   )
 }
 
-export default NFTCard;
+export default NftCard;

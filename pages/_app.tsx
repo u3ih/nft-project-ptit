@@ -1,16 +1,13 @@
 import '../styles/globals.css'
 import React, { useEffect } from 'react';
 import { PersistGate } from "redux-persist/integration/react";
-import { useDispatch, useStore } from "react-redux";
+import { useStore } from "react-redux";
 import { message } from "antd";
 import {
   useGetUserAddress,
   useGetWeb3,
   useHandleFetchUserDataByAddress,
-  useSetMarketplaceContract,
-  useSetUserContract
 } from "../src/hook";
-import { AppProps } from "next/app";
 import { wrapper } from '../src/redux/store';
 
 const MyComponent = ({ Component, pageProps }: any) => {

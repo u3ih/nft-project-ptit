@@ -60,7 +60,7 @@ const UserInfoClient = () => {
         <div style={{ marginTop: 8 }}><PlusOutlined /> Upload</div>
   );
   return (
-    <div className={"max-w-[1240px] pt-[50px] m-auto"}>
+    <div className={"max-w-[1240px] pt-[50px] m-auto px-[20px]"}>
       <Row>
         <Col {...{xs: 24, sm: 24, md: 16}}>
           <h1 className={"mb-[50px] text-[28px]"}>Your wallet address: {userInfo?.userAddress}</h1>
@@ -76,6 +76,13 @@ const UserInfoClient = () => {
                     listType: "picture-card",
                     maxCount: 1,
                     action: `${process.env.NEXT_PUBLIC_API}/files`,
+                    defaultFileList: [{
+                      uid: '-1',
+                      name: 'my-avatar.png',
+                      status: 'done',
+                      url: userInfo?.imgUrl,
+                      thumbUrl: userInfo?.imgUrl,
+                    }],
                     onChange(info: any) {
                       if (info.file.status === 'done') {
                         const fileUrl = `${info?.file?.response?.[0]?.url}/upload/${info?.file?.response?.[0]?.name}`;

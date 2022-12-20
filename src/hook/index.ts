@@ -145,6 +145,20 @@ export const useLoadNfts = () => {
 }
 
 export const useLoadMyNfts = () => {
+    const userAddress = useGetUserAddress();
+    return async () => {
+        if(!userAddress) {
+            return;
+        }
+        const networkData = {
+            url: "nfts/me",
+        }
+        const items = await doRequest(networkData) || [];
+        return items;
+    }
+}
+
+export const useLoadMyNftsFormContract = () => {
     const getMarketplaceContract = useGetMarketplaceContract();
     const userAddress = useGetUserAddress();
     return async () => {
@@ -176,7 +190,7 @@ export const useBuyNft = () => {
     const userAddress = useGetUserAddress();
     const { push } = useRouter();
     const getMarketplaceContract = useGetMarketplaceContract();
-    return async (nft: { price: any, tokenId: string }) => {
+    return async (nft: { price: any, tokenId: string, id: string }) => {
         const marketplaceContract = await getMarketplaceContract();
         if (!nft || !userAddress || !marketplaceContract) {
             return;
@@ -184,6 +198,14 @@ export const useBuyNft = () => {
         /* user will be prompted to pay the asking proces to complete the transaction */
         const price = ethers.utils.parseUnits(nft.price.toString(), 'ether')
         await marketplaceContract.methods.createMarketSale(nft.tokenId).send({ from: userAddress, value: price as any })
+        const requestNftInfo = {
+            url: `nfts/${nft?.id}`,
+            body: {
+                sold: true,
+                owner: userAddress
+            }
+        }
+        await doRequest(requestNftInfo, "put")
         push("/my-nft");
     }
 }

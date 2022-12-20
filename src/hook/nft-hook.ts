@@ -19,7 +19,6 @@ export const useCreateNft = () => {
         const returnFromContractValue = result?.events?.Approval?.returnValues;
         const marketItem = result?.events?.Approval || {};
         delete marketItem.returnValues;
-        console.log("newNft: ", newNft);
         const networkdata = {
             url: "nfts",
             body: {
