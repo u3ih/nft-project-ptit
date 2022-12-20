@@ -7,8 +7,7 @@ export class NFT extends Entity {
     @property({
         type: 'string',
         id: true,
-        generated: true,
-        hidden: true,
+        generated: true
     })
     id: string;
 
