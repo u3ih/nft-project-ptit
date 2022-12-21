@@ -37,7 +37,8 @@
     "sass": "^1.55.0",
     "token-management": "^1.0.4",
     "web3": "^1.8.1",
-    "web3-eth-contract": "^1.8.1"
+    "web3-eth-contract": "^1.8.1",
+    "react-countdown": "^2.3.5"
   },
   "devDependencies": {
     "@types/cookie": "^0.5.1",

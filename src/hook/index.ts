@@ -34,7 +34,7 @@ export const useGetWeb3 = () => {
                 console.error(error);
             }
         } else {
-            message.error("Please dowload MetaMask extension");
+            message.error("Please download MetaMask extension");
         }
         // Legacy dapp browsers...
         // else if (window.web3) {
@@ -150,11 +150,37 @@ export const useLoadMyNfts = () => {
         if(!userAddress) {
             return;
         }
-        const networkData = {
-            url: "nfts/me",
+        const networkSelling = {
+            url: "nfts/me-selling",
         }
-        const items = await doRequest(networkData) || [];
-        return items;
+        const itemsSelling = await doRequest(networkSelling) || [];
+        const networkBought = {
+            url: "nfts/me-bought",
+        }
+        const itemsBought = await doRequest(networkBought) || [];
+        return {itemsSelling, itemsBought};
+    }
+}
+
+export const useLoadAuctionNfts = () => {
+    const userInfo = useGetUserData();
+    return async () => {
+        if(!userInfo) {
+            return;
+        }
+        const networkMarketAuction = {
+            url: "/nfts/list-nft-auction",
+        }
+        const itemsAuction = await doRequest(networkMarketAuction) || [];
+        const networkMyAuction = {
+            url: `/nfts/list-nft-auction?filter[where][buyerId]=${userInfo?.id}`,
+        }
+        const itemsMyAuction = await doRequest(networkMyAuction) || [];
+        const networkMyBuyingAuction = {
+            url: `/nfts/list-my-nft-auction`,
+        }
+        const itemsMyBuyingAuction = await doRequest(networkMyBuyingAuction) || [];
+        return {itemsAuction, itemsMyAuction, itemsMyBuyingAuction};
     }
 }
 

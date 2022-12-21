@@ -4,7 +4,7 @@ import React from "react";
 import {doRequest} from "../../src/common/do-request";
 import _ from "lodash";
 import {Avatar, Col, Empty, Row} from "antd";
-import NftCard from "../nft/nft-card";
+import NftCard from "../my-nft/nft-card";
 import {UserOutlined} from "@ant-design/icons";
 
 const ListNFTs = () => {
@@ -27,7 +27,7 @@ const ListNFTs = () => {
     </div>
   )
   return (
-    <div className="flex flex-col gap-[30px] justify-center max-w-[1240px] px-4 m-auto mt-[20px]">
+    <div className="flex flex-col gap-[30px] justify-center max-w-[1240px] m-auto mt-[20px]">
           {
             Object.values(groupedNft)?.map((listNftsByUser: any, i) => {
                 const {user} = listNftsByUser[0];

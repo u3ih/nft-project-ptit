@@ -4,12 +4,12 @@ import axios from 'axios'
 import {useGetNFTStorage, useGetUserAddress, useGetUserData} from '../../src/hook'
 import { NFT_STORAGE_KEY } from "../../src/hook/helpers";
 import { NextPage } from 'next';
-import {Button, Col, DatePicker, Form, Input, message, Row, Space, Switch, Upload} from "antd";
+import {Button, Col, DatePicker, Form, Input, InputNumber, message, Row, Space, Switch, Upload} from "antd";
 import { Typography } from 'antd';
 import {useCreateNft} from "../../src/hook/nft-hook";
 import dayjs from "dayjs";
 import {LoadingOutlined, UploadOutlined} from "@ant-design/icons";
-import NFTCard from "../nft/nft-card";
+import NFTCard from "../my-nft/nft-card";
 
 const { Title } = Typography;
 
@@ -43,10 +43,10 @@ const CreateNftItem: NextPage = () => {
 
   const listNFTForSale = async () => {
     setIsLoading(true);
-    const { price, name, description, isAuction, duringMinute } = form.getFieldsValue();
-    const timeEndAuction = dayjs().add(duringMinute, "m").valueOf();
+    const { price, name, description, isAuction, timeEndAuction, minJumpPrice } = form.getFieldsValue();
     // Upload NFT to IPFS & Filecoin
     let metadata: any;
+
     await axios({
       method: 'post',
       url: 'https://api.nft.storage/upload',
@@ -56,6 +56,7 @@ const CreateNftItem: NextPage = () => {
         image: fileUrl,
         isAuction,
         timeEndAuction,
+        minJumpPrice,
       },
       headers: { 'Authorization': `Bearer ${NFT_STORAGE_KEY}` }
     }).then(function (response) {
@@ -64,11 +65,11 @@ const CreateNftItem: NextPage = () => {
       .catch(function (error) {
         console.log(error);
       });
-    const urlNFT = `https://${metadata?.data?.value?.cid}.ipfs.nftstorage.link`
+    const tokenURI = `https://${metadata?.data?.value?.cid}.ipfs.nftstorage.link`
 
     /* next, create the item */
     const newNft = {
-      urlNFT,
+      tokenURI,
       name,
       description,
       price,
@@ -77,7 +78,7 @@ const CreateNftItem: NextPage = () => {
       fileUrl,
     }
     await createNft(newNft)
-    router.push('/my-nft')
+    await router.push('/my-nft')
   }
 
   const propsUpload = {
@@ -110,7 +111,10 @@ const CreateNftItem: NextPage = () => {
   const handleValuesChange = (changedValues: any, allValues: any) => {
     setNftData(allValues);
   }
-
+  const disabledDate = (currentDate: any) => {
+      const today = dayjs();
+      return today.isAfter(currentDate) || today.add(1, "days").isBefore(currentDate)
+    }
   return (
     <div className={"flex justify-center flex-col max-w-[1240px] m-auto items-center min-h-[calc(100vh-57px)]"} >
       <Row gutter={[{xs: 12, sm: 12, md: 24}, {xs: 12, sm: 12, md: 24}]} className={"w-full"}>
@@ -131,8 +135,15 @@ const CreateNftItem: NextPage = () => {
                 <Switch checkedChildren="Auction" unCheckedChildren="Auction" defaultChecked={false}/>
               </Form.Item>
               {isAuction && (
-                  <Form.Item name={'duringMinute'} label="During time">
-                    <Input placeholder={"minutes"}/>
+                  <Form.Item name={'timeEndAuction'} label="During time">
+                    <DatePicker format="YYYY-MM-DD HH:mm:ss"
+                                showTime={{ defaultValue: dayjs('00:00:00', 'HH:mm:ss') }}
+                                disabledDate={disabledDate}/>
+                  </Form.Item>
+              )}
+              {isAuction && (
+                  <Form.Item name={'minJumpPrice'} label="Bước tăng nhỏ nhất">
+                    <InputNumber addonAfter="ETH"/>
                   </Form.Item>
               )}
               <Form.Item name={"fileUrl"} label="Image">
@@ -154,7 +165,7 @@ const CreateNftItem: NextPage = () => {
         </Col>
         <Col {...{xs: 24, sm: 24, md: 8}}>
           <h2>Preview</h2>
-          <NFTCard nft={nftData} hideBuyBtn avatarOwner={userInfo?.imgUrl}/>
+          <NFTCard nft={nftData} isOwner avatarOwner={userInfo?.imgUrl}/>
         </Col>
       </Row>
     </div>

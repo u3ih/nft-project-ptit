@@ -11,11 +11,11 @@ export const useCreateNft = () => {
         if(!marketplaceContract) {
             return;
         }
-        const {urlNFT, price} = newNft;
+        const {tokenURI, price} = newNft;
         const priceEther = ethers.utils.parseUnits(price, 'ether')
         let listingPrice = await marketplaceContract.methods.getListingPrice().call();
         listingPrice = listingPrice.toString();
-        const result = await marketplaceContract.methods.createTokenSale(urlNFT, priceEther.toString()).send({ from: userAddress, value: listingPrice })
+        const result = await marketplaceContract.methods.createTokenSale(tokenURI, priceEther.toString()).send({ from: userAddress, value: listingPrice })
         const returnFromContractValue = result?.events?.Approval?.returnValues;
         const marketItem = result?.events?.Approval || {};
         delete marketItem.returnValues;

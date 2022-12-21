@@ -2,31 +2,41 @@ import Image from "next/image";
 import Link from "next/link";
 import { MdOutlineAccountBalanceWallet } from "react-icons/md";
 import style from "./header.module.scss";
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import UserDropdown from "./user-dropdown";
 import {useGetUserAddress, useGetUserData, useGetWeb3} from "../../src/hook";
 import cls from "classnames";
 import {Button, Drawer, message} from "antd";
-import { useDispatch } from "react-redux";
-import * as t from "../../src/redux/types";
-import MarketplaceABI from "contracts/artifacts/contracts/Marketplace.sol/Marketplace.json";
-import { marketplaceAddress } from "../../src/common/constant";
 
 const Header = () => {
   const getWeb3 = useGetWeb3();
   const userInfo = useGetUserData();
+  const [web3, setWeb3] = useState<any>();
+  const [myBalance, setMyBalance] = useState<string>();
   const handleClickConnectWallet = async () => {
-    await getWeb3();
+    const web3 = await getWeb3();
+    setWeb3(web3);
   }
   const [open, setOpen] = useState(false);
 
-  const showDrawer = () => {
+  const showDrawer = async () => {
+    const web3 = await getWeb3();
+    setWeb3(web3);
     setOpen(true);
   };
 
   const onClose = () => {
     setOpen(false);
   };
+  useEffect(() => {
+    if(!web3) {
+      return;
+    }
+    web3.eth.getBalance(userInfo?.userAddress, (err: Error, balance: string) => {
+      const myBalance = web3.utils.fromWei(balance, "ether") + " ETH";
+      setMyBalance(myBalance);
+    });
+  }, [web3])
 
   return (
     <div className={style.wrapper}>
@@ -37,7 +47,7 @@ const Header = () => {
         </div>
       </Link>
       <div className={cls(style.headerItem, "flex items-center")}>
-        {!userInfo?.id && (
+        {!userInfo?.id ? (
           <Button {...{
             onClick: handleClickConnectWallet,
             className: "text-white",
@@ -45,14 +55,23 @@ const Header = () => {
           }}>
             Connect metamask
           </Button>
+        ) : (
+            <Button {...{
+              onClick: handleClickConnectWallet,
+              className: "text-white",
+              type: "primary"
+            }}>
+              Sync metamask
+            </Button>
         )}
       </div>
       <div className={style.headerItems}>
         <Link href="/my-nft">
           <div className={style.headerItem}> My Nfts </div>
         </Link>
-        <div className={style.headerItem}> Auction Nfts </div>
-        <div className={style.headerItem}> Resources </div>
+        <Link href="/auction-nft">
+          <div className={style.headerItem}> Auction Nfts </div>
+        </Link>
         <div className={style.headerItem}>
           <Link href="/create-my-nft">Create Nft</Link>
         </div>
@@ -67,8 +86,8 @@ const Header = () => {
               onClose={onClose}
               open={open}
           >
-            <p>Số dư của bạn là</p>
-            <p>10000000000000 VND</p>
+            <p className={"mb-[5px] font-bold text-[16px]"}>Số dư hiện tại của bạn là:</p>
+            <p>{myBalance}</p>
           </Drawer>
           <MdOutlineAccountBalanceWallet color={"white"} onClick={showDrawer}/>
         </div>

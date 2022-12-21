@@ -1,16 +1,7 @@
 .wrapper {
   position: relative;
-}
-
-.container {
-  &::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: red url('https://lh3.googleusercontent.com/ujepnqpnL0nDQIHsWxlCXzyw4pf01yjz1Jmb4kAQHumJAPrSEj0-e3ABMZlZ1HEpJoqwOcY_kgnuJGzfXbd2Tijri66GXUtfN2MXQA=s250') cover center;
-    opacity: .3;
-    filter: blur(.5);
-  }
+  margin-top: 100px;
+  margin-bottom: 20px;
 }
 
 .title {
@@ -21,21 +12,16 @@
 }
 
 .contentWrapper {
-  display: flex;
   height: 100%;
   position: relative;
-  justify-content: center;
-  flex-wrap: wrap;
-  align-items: center;
-}
 
-.copyContainer {
-  width: 50%;
+  @screen md {
+    padding-right: 100px;
+  }
 }
 
 .description {
   color: #8a939b;
-  max-width: 400px;
   font-size: 20px;
   margin-top: 10px;
   margin-bottom: 25px;
@@ -43,37 +29,134 @@
 
 .ctaContainer {
   display: flex;
+  gap: 20px;
 }
 
 .accentedButton {
+  margin: 0;
+  height: auto;
+  background: transparent;
+  padding: 0;
+  border: none;
+  --border-right: 6px;
+  --text-stroke-color: #333333;
+  --animation-color: #37FF8B;
+  --fs-size: 2em;
+  letter-spacing: 3px;
+  text-decoration: none;
+  font-size: var(--fs-size);
   position: relative;
-  font-size: 20px;
-  font-weight: 600;
-  padding: 4px 12px;
-  background: #2181e2;
-  border-radius: 20px;
-  margin-right: 5px;
-  color: white;
-
+  text-transform: uppercase;
+  color: transparent;
+  -webkit-text-stroke: 1px var(--text-stroke-color);
+  :global {
+    .hover-text {
+      position: absolute;
+      box-sizing: border-box;
+      content: attr(data-text);
+      color: var(--animation-color);
+      width: 0%;
+      inset: 0;
+      border-right: var(--border-right) solid var(--animation-color);
+      overflow: hidden;
+      transition: 0.5s;
+      -webkit-text-stroke: 1px var(--animation-color);
+    }
+  }
   &:hover {
-    background: #42a0ff;
-    cursor: pointer;
+    :global {
+      .hover-text {
+        width: 100%;
+        filter: drop-shadow(0 0 23px var(--animation-color))
+      }
+    }
   }
 }
 
 .button {
   position: relative;
-  font-size: 20px;
-  font-weight: 600;
-  padding: 4px 20px;
-  background: #363840;
-  border-radius: 20px;
-  margin-right: 5px;
-  color: #e4e8ea;
+  display: inline-block;
+  cursor: pointer;
+  outline: none;
+  border: 0;
+  vertical-align: middle;
+  text-decoration: none;
+  background: transparent;
+  padding: 0;
+  font-size: inherit;
+  font-family: inherit;
+  width: 12rem;
+  height: auto;
+
+  :global {
+    .circle {
+      transition: all 0.45s cubic-bezier(0.65, 0, 0.076, 1);
+      position: relative;
+      display: block;
+      margin: 0;
+      width: 3rem;
+      height: 3rem;
+      background: #282936;
+      border-radius: 1.625rem;
+    }
+    .circle .icon {
+      transition: all 0.45s cubic-bezier(0.65, 0, 0.076, 1);
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      margin: auto;
+      background: #fff;
+    }
+    .circle .icon.arrow {
+      transition: all 0.45s cubic-bezier(0.65, 0, 0.076, 1);
+      left: 0.625rem;
+      width: 1.125rem;
+      height: 0.125rem;
+      background: none;
+      &:before {
+        position: absolute;
+        content: "";
+        top: -0.29rem;
+        right: 0.0625rem;
+        width: 0.625rem;
+        height: 0.625rem;
+        border-top: 0.125rem solid #fff;
+        border-right: 0.125rem solid #fff;
+        transform: rotate(45deg);
+      }
+    }
+    .button-text {
+      transition: all 0.45s cubic-bezier(0.65, 0, 0.076, 1);
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      padding: 0.75rem 0;
+      margin: 0 0 0 1.85rem;
+      color: #282936;
+      font-weight: 700;
+      line-height: 1.6;
+      text-align: center;
+      text-transform: uppercase;
+    }
+  }
 
   &:hover {
-    background-color: #4c505c;
-    cursor: pointer;
+    :global {
+      .circle {
+        width: 100%;
+      }
+
+      .circle .icon.arrow {
+        background: #fff;
+        transform: translate(1rem, 0);
+      }
+
+      .button-text {
+        color: #fff;
+      }
+    }
   }
 }
 

@@ -5,6 +5,7 @@ export interface INetwork extends RequestInit {
     params?: object | any;
     options?: object | any;
     body?: object | any;
+    filter?: object | any;
 }
 
 export const doRequest = async (
@@ -12,7 +13,8 @@ export const doRequest = async (
     method?: "get" | "post" | "put" | "delete" | "patch" | "options",
 ) => {
     const token = Cookies.get("userToken");
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API}/${networkData?.url}`, {
+    const url = `${process.env.NEXT_PUBLIC_API}/${networkData?.url}`;
+    const response = await fetch(url, {
         method: (method || "GET").toUpperCase(),
         mode: 'cors', // no-cors, *cors, same-origin
         cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached

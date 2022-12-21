@@ -1,11 +1,7 @@
-import { useEffect } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
 import React from 'react';
-import { useGetUserAddress, useSetInfoAddress } from '../../src/hook';
-import Header from '../header';
 import Hero from '../hero';
 import ListNFTs from './list-nfts';
-
 
 const style = {
   wrapper: ``,
@@ -18,7 +14,7 @@ const ClientHome = () => {
   return (
     <div className={style.wrapper}>
       <Toaster position="top-center" reverseOrder={false} />
-      {/*<Hero />*/}
+      <Hero />
       <ListNFTs />
     </div>
   )
