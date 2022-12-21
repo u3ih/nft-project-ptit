@@ -23,7 +23,7 @@ export class NFTController {
     ) { }
 
     @authenticate('jwt')
-    @get('/nfts/me', {
+    @get('/nfts/me-selling', {
         responses: {
             '200': {
                 description: 'Return current user',
@@ -34,11 +34,42 @@ export class NFTController {
             },
         },
     })
-    async getMyNFT(
+    async getMyNFTSelling(
         @inject(SecurityBindings.USER)
             currentUserProfile: UserProfile,
     ): Promise<any[]> {
-        return await this.nftRepository.find({where: {userId: currentUserProfile?.id}});
+        return await this.nftRepository.find({
+            where: {
+                userId: currentUserProfile?.id,
+                sold: false,
+                isAuction: false,
+            }
+        });
+    }
+
+    @authenticate('jwt')
+    @get('/nfts/me-bought', {
+        responses: {
+            '200': {
+                description: 'Return current user',
+                content: {
+                    'application/json': {
+                    },
+                },
+            },
+        },
+    })
+    async getMyNFTBought(
+        @inject(SecurityBindings.USER)
+            currentUserProfile: UserProfile,
+    ): Promise<any[]> {
+        return await this.nftRepository.find({
+            where: {
+                userId: currentUserProfile?.id,
+                sold: true,
+                isAuction: false,
+            }
+        });
     }
 
     @authenticate('jwt')
@@ -63,6 +94,38 @@ export class NFTController {
             where: {
                 userId: {
                     nin: [currentUserProfile.id]
+                },
+                sold: false,
+                isAuction: true,
+                ...filter?.where
+            },
+            skip: filter?.skip ?? 0,
+            limit: filter?.limit ?? 100,
+        });
+    }
+
+    @authenticate('jwt')
+    @get('/nfts/list-my-nft-auction', {
+        responses: {
+            '200': {
+                description: 'Return my nfts auction',
+                content: {
+                    'application/json': {
+                    },
+                },
+            },
+        },
+    })
+    async getMyNftAuction(
+        @param.query.object("filter") filter: Filter<NFT>,
+        @inject(SecurityBindings.USER)
+            currentUserProfile: UserProfile,
+    ): Promise<any[]> {
+        return await this.nftRepository.find({
+            ...filter,
+            where: {
+                userId: {
+                    eq: currentUserProfile.id
                 },
                 sold: false,
                 isAuction: true,
@@ -127,6 +190,23 @@ export class NFTController {
             currentUserProfile: UserProfile,
     ): Promise<any[]> {
         return await this.nftRepository.find();
+    }
+
+    @get('/nfts/{id}', {
+        responses: {
+            '200': {
+                description: 'return one nft',
+                content: {
+                    'application/json': {
+                    },
+                },
+            },
+        },
+    })
+    async findOneNFT(
+        @param.path.string("id") id: string,
+    ): Promise<any> {
+        return await this.nftRepository.findById(id);
     }
 
     @authenticate('jwt')

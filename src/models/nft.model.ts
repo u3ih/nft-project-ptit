@@ -24,7 +24,12 @@ export class NFT extends Entity {
     @property({
         type: 'string',
     })
-    owner: string;
+    buyerId: string;
+
+    @property({
+        type: 'number',
+    })
+    minJumpPrice: number;
 
     @belongsTo(() => User, {name: 'user'})
     userId: string;
