@@ -89,10 +89,13 @@ export class NFTController {
         @inject(SecurityBindings.USER)
             currentUserProfile: UserProfile,
     ): Promise<any[]> {
-        return await this.nftRepository.find({
+        const newFilter = {
             ...filter,
             where: {
                 userId: {
+                    nin: [currentUserProfile.id]
+                },
+                buyerId: {
                     nin: [currentUserProfile.id]
                 },
                 sold: false,
@@ -101,7 +104,10 @@ export class NFTController {
             },
             skip: filter?.skip ?? 0,
             limit: filter?.limit ?? 100,
-        });
+            include: ["user"]
+        }
+
+        return await this.nftRepository.find(newFilter);
     }
 
     @authenticate('jwt')
@@ -124,9 +130,6 @@ export class NFTController {
         return await this.nftRepository.find({
             ...filter,
             where: {
-                userId: {
-                    eq: currentUserProfile.id
-                },
                 sold: false,
                 isAuction: true,
                 ...filter?.where
@@ -247,6 +250,6 @@ export class NFTController {
         @param.path.string("id") id: string,
         @requestBody() requestNft: Omit<NFT, "id">
     ): Promise<any> {
-        return await this.nftRepository.updateById(id, {...requestNft, userId: currentUserProfile?.id});
+        return await this.nftRepository.updateById(id, {...requestNft});
     }
 }
