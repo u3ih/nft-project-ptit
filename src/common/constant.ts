@@ -1,2 +1,2 @@
-export const marketplaceAddress = "0x9db84002C04C2d475C26bCf2c7DC1015194b150d";
-    export const userContractAddress = "0xE96DaA8Da15Dd53C5c0fC96065C55400D4C3CA39";
+export const marketplaceAddress = "0xd075126C37180A4cd216bB44602195D81b28A9ea";
+    export const userContractAddress = "0x6447b61E3e30367576B83B393565EccEf4CcC360";

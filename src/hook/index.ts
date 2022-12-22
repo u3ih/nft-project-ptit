@@ -2,15 +2,10 @@ import { useDispatch, useSelector } from "react-redux";
 import Web3 from "web3";
 import * as t from "../../src/redux/types";
 import Cookies from "js-cookie";
-import { DOMAIN_CHAIN_CONFIG, NFT_STORAGE_KEY } from "./helpers";
+import {  NFT_STORAGE_KEY } from "./helpers";
 import { NFTStorage } from "nft.storage";
-import { ethers } from "ethers";
 import {marketplaceAddress, userContractAddress} from "../common/constant";
-import Marketplace from 'contracts/artifacts/contracts/Marketplace.sol/Marketplace.json'
-import axios from "axios";
-import { Marketplace as MarketplaceContractType, UserID as UserContractType } from "contracts/src/types/contracts";
 import { message } from "antd";
-import { useRouter } from "next/router";
 import MarketplaceABI from "contracts/artifacts/contracts/Marketplace.sol/Marketplace.json";
 import UserABI from "contracts/artifacts/contracts/UserID.sol/UserID.json";
 import {doRequest} from "../common/do-request";
@@ -109,131 +104,6 @@ export const useGetMarketplaceContract = () => {
 export const useGetNFTStorage = () => {
     const nftStorage = new NFTStorage({ token: NFT_STORAGE_KEY });
     return nftStorage;
-}
-
-export const useLoadNfts = () => {
-    const provider = new ethers.providers.JsonRpcProvider(DOMAIN_CHAIN_CONFIG)
-    const contract = new ethers.Contract(marketplaceAddress, Marketplace.abi, provider)
-    return async () => {
-        const data = await contract.fetchMarketItems()
-        /*
-        *  map over items returned from smart contract and format 
-        *  them as well as fetch their token metadata
-        */
-        const items = await Promise.all(data.map(async (i: any) => {
-            const tokenUri = await contract.tokenURI(i.tokenId)
-            let meta;
-            try {
-                meta = await axios.get(tokenUri)
-            } catch {
-                return null;
-            }
-            const price = ethers.utils.formatUnits(i.price.toString(), 'ether')
-            const item = {
-                price,
-                tokenId: Number(i.tokenId),
-                seller: i.seller,
-                owner: i.owner,
-                image: meta.data.image,
-                name: meta.data.name,
-                description: meta.data.description,
-            }
-            return item
-        })) || []
-        return items;
-    }
-}
-
-export const useLoadMyNfts = () => {
-    const userAddress = useGetUserAddress();
-    return async () => {
-        if(!userAddress) {
-            return;
-        }
-        const networkSelling = {
-            url: "nfts/me-selling",
-        }
-        const itemsSelling = await doRequest(networkSelling) || [];
-        const networkBought = {
-            url: "nfts/me-bought",
-        }
-        const itemsBought = await doRequest(networkBought) || [];
-        return {itemsSelling, itemsBought};
-    }
-}
-
-export const useLoadAuctionNfts = () => {
-    const userInfo = useGetUserData();
-    return async () => {
-        if(!userInfo) {
-            return;
-        }
-        const networkMarketAuction = {
-            url: "/nfts/list-nft-auction",
-        }
-        const itemsAuction = await doRequest(networkMarketAuction) || [];
-        const networkMyAuction = {
-            url: `/nfts/list-nft-auction?filter[where][buyerId]=${userInfo?.id}`,
-        }
-        const itemsMyAuction = await doRequest(networkMyAuction) || [];
-        const networkMyBuyingAuction = {
-            url: `/nfts/list-my-nft-auction`,
-        }
-        const itemsMyBuyingAuction = await doRequest(networkMyBuyingAuction) || [];
-        return {itemsAuction, itemsMyAuction, itemsMyBuyingAuction};
-    }
-}
-
-export const useLoadMyNftsFormContract = () => {
-    const getMarketplaceContract = useGetMarketplaceContract();
-    const userAddress = useGetUserAddress();
-    return async () => {
-        const marketplaceContract = await getMarketplaceContract();
-        if(!marketplaceContract) {
-            return;
-        }
-        const data = await marketplaceContract.methods.fetchMyNFTs().call({ from: userAddress });
-        const items = await Promise.all(data.map(async (i: any) => {
-            const tokenURI = await marketplaceContract.methods.tokenURI(i.tokenId).call()
-            const meta = await axios.get(tokenURI)
-            const price = ethers.utils.formatUnits(i.price.toString(), 'ether')
-            const item = {
-                price,
-                tokenId: Number(i.tokenId),
-                seller: i.seller,
-                owner: i.owner,
-                image: meta.data.image,
-                tokenURI
-            }
-            return item
-        })) || []
-        return items;
-    }
-}
-
-export const useBuyNft = () => {
-    /* needs the user to sign the transaction, so will use Web3Provider and sign it */
-    const userAddress = useGetUserAddress();
-    const { push } = useRouter();
-    const getMarketplaceContract = useGetMarketplaceContract();
-    return async (nft: { price: any, tokenId: string, id: string }) => {
-        const marketplaceContract = await getMarketplaceContract();
-        if (!nft || !userAddress || !marketplaceContract) {
-            return;
-        }
-        /* user will be prompted to pay the asking proces to complete the transaction */
-        const price = ethers.utils.parseUnits(nft.price.toString(), 'ether')
-        await marketplaceContract.methods.createMarketSale(nft.tokenId).send({ from: userAddress, value: price as any })
-        const requestNftInfo = {
-            url: `nfts/${nft?.id}`,
-            body: {
-                sold: true,
-                owner: userAddress
-            }
-        }
-        await doRequest(requestNftInfo, "put")
-        push("/my-nft");
-    }
 }
 
 export const useSetUserContract = () => {

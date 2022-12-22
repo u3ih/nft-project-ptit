@@ -7,12 +7,15 @@ import UserDropdown from "./user-dropdown";
 import {useGetUserAddress, useGetUserData, useGetWeb3} from "../../src/hook";
 import cls from "classnames";
 import {Button, Drawer, message} from "antd";
+import {useRouter} from "next/router";
 
 const Header = () => {
   const getWeb3 = useGetWeb3();
   const userInfo = useGetUserData();
   const [web3, setWeb3] = useState<any>();
   const [myBalance, setMyBalance] = useState<string>();
+  const {push} = useRouter();
+
   const handleClickConnectWallet = async () => {
     const web3 = await getWeb3();
     setWeb3(web3);
@@ -57,7 +60,10 @@ const Header = () => {
           </Button>
         ) : (
             <Button {...{
-              onClick: handleClickConnectWallet,
+              onClick: async () => {
+                await push("/")
+                await handleClickConnectWallet();
+              },
               className: "text-white",
               type: "primary"
             }}>

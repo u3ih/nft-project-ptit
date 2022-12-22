@@ -1,7 +1,8 @@
 import React, {useEffect, useState} from "react";
-import {useLoadAuctionNfts, useLoadMyNfts} from "../../src/hook";
 import {Empty, Tabs} from "antd";
 import ListMyNft from "../my-nft/list-my-nft";
+import {useLoadAuctionNfts} from "../../src/hook/nft-hook";
+import ListNft from "./list-nft";
 
 const AuctionNftClient = () => {
     const [itemsAuction, setItemsAuction] = useState<any>([])
@@ -19,9 +20,11 @@ const AuctionNftClient = () => {
         loadNFTs()
     }, [])
 
-    if (!itemsAuction.length && !itemsMyAuction.length) {
+    if (!itemsAuction.length && !itemsMyAuction.length && !itemsMyBuyingAuction.length) {
         return (
-            <Empty />
+            <div className={"mt-[40px]"}>
+                <Empty description={"Không có nft nào"}/>
+            </div>
         )
     }
     return (
@@ -33,13 +36,13 @@ const AuctionNftClient = () => {
                         label: `NFT đang đấu giá`,
                         key: 'auction-nft-selling',
                         children: (
-                            <ListMyNft {...{
+                            <ListNft {...{
                                 nfts: itemsAuction
                             }}/>
                         ),
                     },
                     {
-                        label: `Nft bạn đã đấu giá`,
+                        label: `Nft đấu giá của bạn`,
                         key: 'auction-nft-bought',
                         children: (
                             <ListMyNft {...{
@@ -48,10 +51,10 @@ const AuctionNftClient = () => {
                         ),
                     },
                     {
-                        label: `Nft đấu giá của bạn`,
+                        label: `Nft bạn đã đấu giá`,
                         key: 'auction-my-nft',
                         children: (
-                            <ListMyNft {...{
+                            <ListNft {...{
                                 nfts: itemsMyBuyingAuction
                             }}/>
                         ),

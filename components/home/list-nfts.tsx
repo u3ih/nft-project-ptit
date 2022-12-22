@@ -1,5 +1,4 @@
 import {useEffect, useMemo, useState} from "react"
-import { useLoadNfts } from "../../src/hook"
 import React from "react";
 import {doRequest} from "../../src/common/do-request";
 import _ from "lodash";

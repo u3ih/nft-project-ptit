@@ -42,21 +42,18 @@ const CreateNftItem: NextPage = () => {
   const userInfo = useGetUserData();
 
   const listNFTForSale = async () => {
+    await form.validateFields();
     setIsLoading(true);
-    const { price, name, description, isAuction, timeEndAuction, minJumpPrice } = form.getFieldsValue();
+    const nftData = form.getFieldsValue();
     // Upload NFT to IPFS & Filecoin
     let metadata: any;
-
     await axios({
       method: 'post',
       url: 'https://api.nft.storage/upload',
       data: {
-        name,
-        description,
+        ...nftData,
         image: fileUrl,
         isAuction,
-        timeEndAuction,
-        minJumpPrice,
       },
       headers: { 'Authorization': `Bearer ${NFT_STORAGE_KEY}` }
     }).then(function (response) {
@@ -69,16 +66,22 @@ const CreateNftItem: NextPage = () => {
 
     /* next, create the item */
     const newNft = {
+      ...nftData,
       tokenURI,
-      name,
-      description,
-      price,
       isAuction,
-      timeEndAuction,
       fileUrl,
     }
-    await createNft(newNft)
-    await router.push('/my-nft')
+    try {
+      await createNft(newNft);
+      if(!isAuction) {
+        await router.push('/my-nft');
+        return;
+      }
+      await router.push('/auction-nft');
+    } catch (e: any) {
+      message.error(e?.message)
+      setIsLoading(false);
+    }
   }
 
   const propsUpload = {
@@ -113,7 +116,7 @@ const CreateNftItem: NextPage = () => {
   }
   const disabledDate = (currentDate: any) => {
       const today = dayjs();
-      return today.isAfter(currentDate) || today.add(1, "days").isBefore(currentDate)
+      return today.isAfter(currentDate);
     }
   return (
     <div className={"flex justify-center flex-col max-w-[1240px] m-auto items-center min-h-[calc(100vh-57px)]"} >
@@ -135,14 +138,14 @@ const CreateNftItem: NextPage = () => {
                 <Switch checkedChildren="Auction" unCheckedChildren="Auction" defaultChecked={false}/>
               </Form.Item>
               {isAuction && (
-                  <Form.Item name={'timeEndAuction'} label="During time">
+                  <Form.Item name={'timeEndAuction'} label="During time" rules={[{ required: true }]}>
                     <DatePicker format="YYYY-MM-DD HH:mm:ss"
                                 showTime={{ defaultValue: dayjs('00:00:00', 'HH:mm:ss') }}
                                 disabledDate={disabledDate}/>
                   </Form.Item>
               )}
               {isAuction && (
-                  <Form.Item name={'minJumpPrice'} label="Bước tăng nhỏ nhất">
+                  <Form.Item name={'minJumpPrice'} label="Bước tăng nhỏ nhất" rules={[{ required: true }]}>
                     <InputNumber addonAfter="ETH"/>
                   </Form.Item>
               )}
@@ -164,8 +167,10 @@ const CreateNftItem: NextPage = () => {
           </div>
         </Col>
         <Col {...{xs: 24, sm: 24, md: 8}}>
-          <h2>Preview</h2>
-          <NFTCard nft={nftData} isOwner avatarOwner={userInfo?.imgUrl}/>
+          <div className={"flex flex-col justify-center items-center"}>
+            <h2>Preview</h2>
+            <NFTCard nft={nftData} isOwner avatarOwner={userInfo?.imgUrl}/>
+          </div>
         </Col>
       </Row>
     </div>

@@ -7,6 +7,7 @@ specifiers:
   '@types/cookie': ^0.5.1
   '@types/jest': ^29.1.1
   '@types/js-cookie': ^3.0.2
+  '@types/lodash': ^4.14.191
   '@types/node': ^18.7.23
   '@types/react': ^18.0.21
   '@types/react-dom': ^18.0.6
@@ -25,6 +26,7 @@ specifiers:
   ethers: ^5.7.2
   js-cookie: ^3.0.1
   jwt-decode: ^3.1.2
+  lodash: ^4.17.21
   next: ^12.3.1
   next-redux-wrapper: ^8.0.0
   nft.storage: ^7.0.0
@@ -33,6 +35,7 @@ specifiers:
   prettier: ^2.5.1
   prettier-plugin-tailwindcss: ^0.1.1
   react: ^18.2.0
+  react-countdown: ^2.3.5
   react-dom: ^18.2.0
   react-hot-toast: ^2.2.0
   react-icons: ^4.3.1
@@ -41,7 +44,7 @@ specifiers:
   redux-persist: ^6.0.0
   redux-thunk: ^2.4.2
   sass: ^1.55.0
-  tailwindcss: ^3.1.8
+  tailwindcss: ^3.2.4
   token-management: ^1.0.4
   typescript: ^4.8.4
   web3: ^1.8.1
@@ -63,11 +66,13 @@ dependencies:
   ethers: 5.7.2
   js-cookie: 3.0.1
   jwt-decode: 3.1.2
+  lodash: 4.17.21
   next: 12.3.4_m5sxuueb27gk6ddc5gums6vtgq
   next-redux-wrapper: 8.0.0_ut75xkd2z46642nkyfe25hbtdu
   nft.storage: 7.0.0_node-fetch@3.3.0
   node-fetch: 3.3.0
   react: 18.2.0
+  react-countdown: 2.3.5_biqbaboplfbrettd7655fr4n2y
   react-dom: 18.2.0_react@18.2.0
   react-hot-toast: 2.4.0_owo25xnefcwdq3zjgtohz6dbju
   react-icons: 4.7.1_react@18.2.0
@@ -83,6 +88,7 @@ dependencies:
 devDependencies:
   '@types/cookie': 0.5.1
   '@types/js-cookie': 3.0.2
+  '@types/lodash': 4.14.191
   '@types/node': 18.11.11
   '@types/react': 18.0.26
   '@typescript-eslint/eslint-plugin': 5.45.1_tdm6ms4ntwhlpozn7kjqrhum74
@@ -999,6 +1005,10 @@ packages:
     dependencies:
       '@types/node': 18.11.11
     dev: false
+
+  /@types/lodash/4.14.191:
+    resolution: {integrity: sha512-BdZ5BCCvho3EIXw6wUCXHe7rS53AIDPLE+JzwgT+OsJk53oBfbSmZZ7CX4VaRoN78N+TJpFi9QPlfIVNmJYWxQ==}
+    dev: true
 
   /@types/long/4.0.2:
     resolution: {integrity: sha512-MqTGEo5bj5t157U6fA/BiDynNkn0YknVdh48CMPkTSpFTVmvao5UQmm7uEF6xBEo7qIMAlY/JSleYaE6VOdpaA==}
@@ -4962,7 +4972,6 @@ packages:
       loose-envify: 1.4.0
       object-assign: 4.1.1
       react-is: 16.13.1
-    dev: true
 
   /protobufjs/6.11.3:
     resolution: {integrity: sha512-xL96WDdCZYdU7Slin569tFX712BxsxslWwAfAhCYjQKGTq7dAU91Lomy6nLLhh/dyGhk/YH4TwTSRxTzhuHyZg==}
@@ -5642,6 +5651,17 @@ packages:
       classnames: 2.3.2
       rc-resize-observer: 1.2.0_biqbaboplfbrettd7655fr4n2y
       rc-util: 5.25.2_biqbaboplfbrettd7655fr4n2y
+      react: 18.2.0
+      react-dom: 18.2.0_react@18.2.0
+    dev: false
+
+  /react-countdown/2.3.5_biqbaboplfbrettd7655fr4n2y:
+    resolution: {integrity: sha512-K26ENYEesMfPxhRRtm1r+Pf70SErrvW3g4CArLi/x6MPFjgfDFYePT4UghEj8p2nI0cqVV7/JjDgjyr//U60Og==}
+    peerDependencies:
+      react: '>= 15'
+      react-dom: '>= 15'
+    dependencies:
+      prop-types: 15.8.1
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
     dev: false

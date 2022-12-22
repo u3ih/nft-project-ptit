@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
-import {useLoadMyNfts} from '../../src/hook'
 import React from "react";
 import {Empty, Tabs} from "antd";
 import ListMyNft from "./list-my-nft";
+import {useLoadMyNfts} from "../../src/hook/nft-hook";
 
 const MyAssets = () => {
   const [sellingNfts, setSellingNfts] = useState<any>([])
@@ -20,7 +20,9 @@ const MyAssets = () => {
 
   if (!sellingNfts.length && !boughtNfts.length) {
     return (
-        <Empty />
+        <div className={"mt-[40px]"}>
+            <Empty description={"Không có nft nào"}/>
+        </div>
     )
   }
   return (
