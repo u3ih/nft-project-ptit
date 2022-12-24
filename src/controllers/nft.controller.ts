@@ -10,6 +10,8 @@ import {
 import { SecurityBindings, securityId, UserProfile } from '@loopback/security';
 import {NFTRepository} from "../repositories/nft.repository";
 import {NFT} from "../models/nft.model";
+import {TransactionRepository} from "../repositories/transaction.repository";
+import {TRANSACTION_STATUSES, TRANSACTION_TYPES} from "../models/transaction.model";
 
 const ObjectId = require("objectid")
 
@@ -20,6 +22,7 @@ export class NFTController {
         @inject(SecurityBindings.USER, { optional: true })
         public user: UserProfile,
         @repository(NFTRepository) protected nftRepository: NFTRepository,
+        @repository(TransactionRepository) protected transactionRepository: TransactionRepository,
     ) { }
 
     @authenticate('jwt')
@@ -209,7 +212,7 @@ export class NFTController {
     async findOneNFT(
         @param.path.string("id") id: string,
     ): Promise<any> {
-        return await this.nftRepository.findById(id);
+        return await this.nftRepository.findById(id, {include: ["user"]});
     }
 
     @authenticate('jwt')
@@ -248,8 +251,38 @@ export class NFTController {
         @inject(SecurityBindings.USER)
             currentUserProfile: UserProfile,
         @param.path.string("id") id: string,
-        @requestBody() requestNft: Omit<NFT, "id">
+        @requestBody() requestNft: Omit<any, "id">
     ): Promise<any> {
+        const {price, sold, owner, userId, buyer, buyerId} = requestNft;
+        const oldNft = await this.nftRepository.findById(id);
+        if(!oldNft) {
+            return;
+        }
+        // is buy nft
+        if(sold && userId && owner) {
+            const newTransaction = {
+                price: oldNft.price,
+                userId,
+                type: TRANSACTION_TYPES.BUY_NFT,
+                date: new Date(),
+                status: TRANSACTION_STATUSES.SUCCESS,
+                from: owner,
+                to: oldNft?.owner,
+                nftId: oldNft.id,
+            }
+            await this.transactionRepository.create(newTransaction)
+        } else if (buyer && price && buyerId) {
+            const newTransaction = {
+                price,
+                userId: buyerId,
+                type: TRANSACTION_TYPES.UPDATE_AUCTION_PRICE,
+                date: new Date(),
+                status: TRANSACTION_STATUSES.SUCCESS,
+                from: buyer,
+                nftId: oldNft.id,
+            }
+            await this.transactionRepository.create(newTransaction)
+        }
         return await this.nftRepository.updateById(id, {...requestNft});
     }
 }
