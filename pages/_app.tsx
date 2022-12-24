@@ -2,7 +2,7 @@ import '../styles/globals.css'
 import React, { useEffect } from 'react';
 import { PersistGate } from "redux-persist/integration/react";
 import { useStore } from "react-redux";
-import { message } from "antd";
+import {ConfigProvider, message} from "antd";
 import {
   useGetUserAddress,
   useGetWeb3,
@@ -56,9 +56,11 @@ function MyApp(_props: { Component: any; pageProps: any; }) {
         persistor: store.__persistor,
       }}
     >
-      <PageLayout>
-        <MyComponent {...{ Component, pageProps }} />
-      </PageLayout>
+      <ConfigProvider theme={{ hashed: false }}>
+        <PageLayout>
+          <MyComponent {...{ Component, pageProps }} />
+        </PageLayout>
+      </ConfigProvider>
     </PersistGate>
   )
 }

@@ -4,39 +4,22 @@ import Header from "../header";
 import NFTImage from "./NFTImage";
 import GeneralDetails from "./GeneralDetails";
 import ItemActivity from "./ItemActivity";
-
-const style = {
-    wrapper: `flex flex-col items-center container-lg text-[#e5e8eb]`,
-    container: `container p-6`,
-    topContent: `flex`,
-    nftImgContainer: `flex-1 mr-4`,
-    detailsContainer: `flex-[2] ml-4`,
-}
+import {Col, Row} from "antd";
 
 const NftDetail = (props: any) => {
     const {nftDetail} = props;
-    const router = useRouter()
-console.log("nftDetail: ", nftDetail);
     return (
-        <div>
-            <div className={style.wrapper}>
-                <div className={style.container}>
-                    <div className={style.topContent}>
-                        <div className={style.nftImgContainer}>
+        <div className={"wrapper py-[20px]"}>
+            <div className={"container"}>
+                    <Row gutter={[{xs: 12, sm: 12, md: 24}, {xs: 12, sm: 12, md: 24}]}>
+                        <Col {...{xs: 24, sm: 24, md: 8}}>
                             <NFTImage selectedNft={nftDetail} />
-                        </div>
-                        <div className={style.detailsContainer}>
+                        </Col>
+                        <Col {...{xs: 24, sm: 24, md: 16}}>
                             <GeneralDetails selectedNft={nftDetail} />
-                            {/* <Purchase
-                isListed={router.query.isListed}
-                selectedNft={selectedNft}
-                listings={listings}
-                marketPlaceModule={marketPlaceModule}
-              /> */}
-                        </div>
-                    </div>
-                    <ItemActivity />
-                </div>
+                        </Col>
+                    </Row>
+                <ItemActivity selectedNft={nftDetail}/>
             </div>
         </div>
     )

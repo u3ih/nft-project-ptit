@@ -19,6 +19,7 @@ a {
 
 .client-main-layout-children-wrap {
   /* background-color: #ffffff; */
+  min-height: calc(100vh - 499px);
 }
 
 p {
@@ -29,4 +30,22 @@ p {
   max-width: 1240px;
   margin: auto;
   position: relative;
+}
+
+@keyframes animateWaves {
+  0% {
+    background-position-x: 1000px;
+  }
+  100% {
+    background-positon-x: 0px;
+  }
+}
+
+@keyframes animate {
+  0% {
+    background-position-x: -1000px;
+  }
+  100% {
+    background-positon-x: 0px;
+  }
 }

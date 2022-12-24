@@ -29,11 +29,12 @@ const AuctionNftClient = () => {
     }
     return (
         <div className="max-w-[1240px] m-auto">
+            <h1>Auction NFT</h1>
             <Tabs
                 defaultActiveKey="auction-nft-selling"
                 items={[
                     {
-                        label: `NFT đang đấu giá`,
+                        label: `NFT đang trên sàn`,
                         key: 'auction-nft-selling',
                         children: (
                             <ListNft {...{
@@ -42,7 +43,7 @@ const AuctionNftClient = () => {
                         ),
                     },
                     {
-                        label: `Nft đấu giá của bạn`,
+                        label: `Nft đấu giá bạn đã tạo`,
                         key: 'auction-nft-bought',
                         children: (
                             <ListMyNft {...{
@@ -51,7 +52,7 @@ const AuctionNftClient = () => {
                         ),
                     },
                     {
-                        label: `Nft bạn đã đấu giá`,
+                        label: "Nft bạn đã đặt giá",
                         key: 'auction-my-nft',
                         children: (
                             <ListNft {...{

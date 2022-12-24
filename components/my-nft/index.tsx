@@ -27,6 +27,7 @@ const MyAssets = () => {
   }
   return (
     <div className="max-w-[1240px] m-auto">
+       <h1>NFT của tôi</h1>
       <Tabs
           defaultActiveKey="nft-selling"
           items={[
@@ -35,7 +36,6 @@ const MyAssets = () => {
               key: 'nft-selling',
               children: (
                   <ListMyNft {...{
-                    title: "NFT đang bán",
                     nfts: sellingNfts
                   }}/>
               ),
@@ -45,7 +45,6 @@ const MyAssets = () => {
               key: 'nft-bought',
               children: (
                   <ListMyNft {...{
-                    title: "Nft đã mua",
                     nfts: boughtNfts
                   }}/>
               ),

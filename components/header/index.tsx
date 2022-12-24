@@ -14,7 +14,7 @@ const Header = () => {
   const userInfo = useGetUserData();
   const [web3, setWeb3] = useState<any>();
   const [myBalance, setMyBalance] = useState<string>();
-  const {push} = useRouter();
+  const {reload} = useRouter();
 
   const handleClickConnectWallet = async () => {
     const web3 = await getWeb3();
@@ -61,8 +61,8 @@ const Header = () => {
         ) : (
             <Button {...{
               onClick: async () => {
-                await push("/")
                 await handleClickConnectWallet();
+                await reload();
               },
               className: "text-white",
               type: "primary"

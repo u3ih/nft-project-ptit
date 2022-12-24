@@ -1,6 +1,7 @@
 import NftCard from "./nft-card";
 import React from "react";
 import {useGetUserData} from "../../src/hook";
+import {Col, Row} from "antd";
 
 const ListMyNft = (props: {title?: string, nfts: any[]}) => {
     const {title, nfts} = props;
@@ -8,15 +9,16 @@ const ListMyNft = (props: {title?: string, nfts: any[]}) => {
     return (
         <>
             {title && <h2 className="text-[40px] font-semibold my-[20px]">{title}</h2>}
-            <div className="flex justify-center p-4">
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-4">
-                    {
-                        nfts?.map((nft: any, i: number) => (
-                            <NftCard nft={nft} avatarOwner={userInfo?.imgUrl} key={i} isOwner={userInfo?.id === nft?.userId} showReListNftBtn={nft?.sold}/>
-                        ))
-                    }
-                </div>
-            </div>
+            <Row gutter={[{xs: 12, sm: 12, md: 24}, {xs: 12, sm: 12, md: 24}]} >
+                {
+                    nfts?.map((nft: any, i: number) => (
+                        <Col {...{xs: 24, sm: 12, md: 6}} key={nft?.id}>
+                            <NftCard nft={nft} avatarOwner={userInfo?.imgUrl} isOwner={userInfo?.id === nft?.userId} showReListNftBtn={nft?.sold}/>
+                        </Col>
+
+                    ))
+                }
+            </Row>
         </>
     )
 }

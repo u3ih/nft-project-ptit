@@ -172,6 +172,38 @@ export const useBuyNft = () => {
     }
 }
 
+export const useResellNft = () => {
+    /* needs the user to sign the transaction, so will use Web3Provider and sign it */
+    const userInfo = useGetUserData();
+    const { push } = useRouter();
+    const getMarketplaceContract = useGetMarketplaceContract();
+
+    return async (nft:{price?: string, id: any, tokenId: any}) => {
+        const marketplaceContract = await getMarketplaceContract();
+        if (!nft.price || !nft.id || !nft.tokenId || !userInfo || !marketplaceContract) {
+            return;
+        }
+        /* user will be prompted to pay the asking proces to complete the transaction */
+        const priceFormatted = ethers.utils.parseUnits(nft.price, 'ether')
+        let listingPrice = await marketplaceContract.methods.getListingPrice().call();
+
+        listingPrice = listingPrice.toString()
+        await marketplaceContract.methods.resellToken(nft.tokenId.toString(), priceFormatted.toString()).send({ from: userInfo?.userAddress, value: listingPrice })
+        const requestNftInfo = {
+            url: `nfts/${nft?.id}`,
+            body: {
+                price: nft.price,
+                sold: false,
+                owner: userInfo?.userAddress,
+                userId: userInfo?.id
+            }
+        }
+        await doRequest(requestNftInfo, "put")
+        message.success("Thành công")
+        push("my-nft");
+    }
+}
+
 export const useAuctionNft = () => {
     const userInfo = useGetUserData();
     const getMarketplaceContract = useGetMarketplaceContract();
@@ -180,7 +212,6 @@ export const useAuctionNft = () => {
         if (!nft || !userInfo || !marketplaceContract) {
             return;
         }
-        console.log("nft: ", nft);
         /* user will be prompted to pay the asking proces to complete the transaction */
         const auctionPrice = ethers.utils.parseUnits(nft.auctionPrice.toString(), 'ether')
         try {

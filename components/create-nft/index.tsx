@@ -138,7 +138,7 @@ const CreateNftItem: NextPage = () => {
                 <Switch checkedChildren="Auction" unCheckedChildren="Auction" defaultChecked={false}/>
               </Form.Item>
               {isAuction && (
-                  <Form.Item name={'timeEndAuction'} label="During time" rules={[{ required: true }]}>
+                  <Form.Item name={'timeEndAuction'} label="End time" rules={[{ required: true }]}>
                     <DatePicker format="YYYY-MM-DD HH:mm:ss"
                                 showTime={{ defaultValue: dayjs('00:00:00', 'HH:mm:ss') }}
                                 disabledDate={disabledDate}/>

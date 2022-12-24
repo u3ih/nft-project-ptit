@@ -19,14 +19,14 @@ const Hero = () => {
                 Discover, collect, and sell extraordinary NFTs
               </div>
               <div className={style.description}>
-                OpenSea is the world&apos;s first and largest NFT marketplace
+                Here is the world&apos;s first and largest NFT marketplace
               </div>
               <div className={style.ctaContainer}>
                 <button className={style.button} onClick={handleClickCreateNft}>
                   <span className="circle" aria-hidden="true">
                   <span className="icon arrow"></span>
                   </span>
-                  <span className="button-text">Create</span>
+                  <span className="button-text">Create NFT</span>
                 </button>
               </div>
             </div>

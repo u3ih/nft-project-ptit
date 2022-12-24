@@ -1,21 +1,22 @@
 import NftCard from "../my-nft/nft-card";
 import React from "react";
+import {Col, Row} from "antd";
 
 const ListNft = (props: { avatarOwner?: string, isOwner?: boolean, nfts: any }) => {
     const {avatarOwner, isOwner = false, nfts} = props;
     return (
-        <div className="flex justify-center p-4">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-4">
+        <Row gutter={[{xs: 12, sm: 12, md: 24}, {xs: 12, sm: 12, md: 24}]}>
                 {
                     nfts?.map((nft: any, i: number) => {
                         const avatar = avatarOwner || nft?.user?.imgUrl;
                         return (
-                            <NftCard nft={nft} avatarOwner={avatar} key={i} isOwner={isOwner} showReListNftBtn={nft?.sold}/>
+                            <Col {...{xs: 24, sm: 12, md: 6}} key={nft?.id} >
+                                <NftCard nft={nft} avatarOwner={avatar} isOwner={isOwner} showReListNftBtn={nft?.sold}/>
+                            </Col>
                         )
                     })
                 }
-            </div>
-        </div>
+        </Row>
     )
 }
 

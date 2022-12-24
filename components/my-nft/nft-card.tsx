@@ -29,7 +29,7 @@ const NftCard = (props: {nft: any, isOwner?: boolean, avatarOwner: string, showR
     const router = useRouter()
     const {timeEndAuction, isAuction = false} = nft;
     const listNFT = (nft: any) => {
-        router.push(`/resell-nft?id=${nft.tokenId}&tokenURI=${nft.tokenURI}`)
+        router.push(`/resell-nft?id=${nft.id}&tokenId=${nft.tokenId}&tokenURI=${nft.tokenURI}`)
     }
     const minPrice = useMemo(() => {
         return Number(nft?.price) + Number(nft?.minJumpPrice);

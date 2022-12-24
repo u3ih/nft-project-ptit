@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from 'react'
-import { ethers } from 'ethers'
 import { useRouter } from 'next/router'
 import axios from 'axios'
-import { useGetMarketplaceContract, useGetUserAddress } from '../../src/hook'
 import {Button, Form, Input, Space, Upload} from "antd";
+import {useResellNft} from "../../src/hook/nft-hook";
 
 const layout = {
-  labelCol: { span: 4 },
-  wrapperCol: { span: 20 },
+  labelCol: { span: 8 },
+  wrapperCol: { span: 16 },
 };
 
 /* eslint-disable no-template-curly-in-string */
@@ -24,11 +23,9 @@ const validateMessages = {
 
 const ResellNFT = () => {
   const router = useRouter()
-  const { id, tokenURI } = router.query
-  const getMarketplaceContract = useGetMarketplaceContract();
-  const userAddress = useGetUserAddress();
+  const { id, tokenId, tokenURI } = router.query
   const [form] = Form.useForm();
-
+  const resellNft = useResellNft();
   useEffect(() => {
     fetchNFT()
   }, [id])
@@ -40,25 +37,18 @@ const ResellNFT = () => {
   }
 
   const listNFTForSale = async () => {
-    const marketplaceContract = await getMarketplaceContract()
-    const {price, image} = form.getFieldsValue();
-    if (!price || !id || !marketplaceContract) return;
-    const priceFormatted = ethers.utils.parseUnits(price, 'ether')
-    let listingPrice = await marketplaceContract.methods.getListingPrice().call();
-
-    listingPrice = listingPrice.toString()
-    await marketplaceContract.methods.resellToken(id.toString(), priceFormatted.toString()).send({ from: userAddress, value: listingPrice })
-    router.push('/')
+    const {price} = form.getFieldsValue();
+    await resellNft({id, tokenId, price})
   }
 
   return (
     <div className="flex justify-center flex-col max-w-[1240px] m-auto items-center min-h-[calc(100vh-57px)]">
-      <div className="w-1/2 flex flex-col pb-12 mt-[40px]">
+      <div className="w-1/2 flex flex-col pb-12 mt-[40px] justify-center items-center">
+        <img className="rounded mb-4 margin-auto" width="350" src={form.getFieldValue("image")} />
         <Form {...layout} name="nest-messages" validateMessages={validateMessages} form={form}>
           <Form.Item name={'price'} label="Name" rules={[{ required: true }]}>
             <Input placeholder="Asset Price in Eth"/>
           </Form.Item>
-              <img className="rounded mt-4" width="350" src={form.getFieldValue("image")} />
           <Form.Item wrapperCol={{ ...layout.wrapperCol, offset: 8 }}>
             <Space>
               <Button onClick={listNFTForSale} type={"primary"} className={"mt-[15px]"}>

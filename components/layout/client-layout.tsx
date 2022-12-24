@@ -1,6 +1,6 @@
 import classNames from "classnames";
 import { Affix } from "antd";
-// import ClientMainFooter from "../footer";
+import ClientMainFooter from "../footer";
 import React from "react";
 import Header from "../header";
 
@@ -14,7 +14,7 @@ export const ClientMainLayout = (props: any) => {
         <Header />
       </Affix>
       <div className="client-main-layout-children-wrap">{children}</div>
-      {/* <ClientMainFooter /> */}
+       <ClientMainFooter />
     </div>
   );
 };
