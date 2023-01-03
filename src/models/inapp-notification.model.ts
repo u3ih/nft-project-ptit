@@ -22,6 +22,21 @@ export class InappNotification extends Entity {
     message: string;
 
     @property({
+        type: 'string',
+    })
+    type: string;
+
+    @property({
+        type: 'string',
+    })
+    nftPrice: string;
+
+    @property({
+        type: 'string',
+    })
+    nftName: string;
+
+    @property({
         type: 'Date',
     })
     createdTime: Date;

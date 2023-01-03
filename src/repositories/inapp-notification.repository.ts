@@ -9,6 +9,7 @@ import {User} from "../models";
 import {UserRepository} from "./users.repository";
 import {InappNotification, InappNotificationRelations} from "../models/inapp-notification.model";
 import {MongoDbDataSource} from "../datasources";
+import {Transaction} from "../models/transaction.model";
 
 export class InappNotificationRepository extends DefaultCrudRepository<
     InappNotification,
@@ -31,5 +32,22 @@ export class InappNotificationRepository extends DefaultCrudRepository<
             userRepositoryGetter,
         );
         this.registerInclusionResolver("user", this.user.inclusionResolver);
+    }
+
+    protected definePersistedModel(entityClass: typeof Transaction) {
+        const modelClass = super.definePersistedModel(entityClass);
+        modelClass.observe("after save", async (ctx: any) => {
+            const {instance, isNewInstance} = ctx.instance;
+            console.log("after create")
+
+            if(instance && isNewInstance) {
+                // const inappNotiData = {
+                //     ...instance
+                // }
+                // console.log("inappNotiData: ", inappNotiData);
+                // await this.inappNotificationRepository.create(inappNotiData);
+            }
+        });
+        return modelClass;
     }
 }

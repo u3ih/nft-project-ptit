@@ -19,6 +19,16 @@ export class NFT extends Entity {
     @property({
         type: 'string',
     })
+    name: string;
+
+    @property({
+        type: 'string',
+    })
+    fileUrl: string;
+
+    @property({
+        type: 'string',
+    })
     seller: string;
 
     @property({

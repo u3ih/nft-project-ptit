@@ -11,6 +11,8 @@ import { SecurityBindings, securityId, UserProfile } from '@loopback/security';
 import {TransactionRepository} from "../repositories/transaction.repository";
 import {TRANSACTION_STATUSES, TRANSACTION_TYPES} from "../models/transaction.model";
 
+const ObjectId = require("objectid");
+
 export class TransactionController {
     constructor(
         @inject(TokenServiceBindings.TOKEN_SERVICE)
@@ -33,13 +35,13 @@ export class TransactionController {
         },
     })
     async getTransactionOfNftDetail(
-        @param.query.object("id") idNft: string,
+        @param.path.string("id") nftId: string,
         @inject(SecurityBindings.USER)
             currentUserProfile: UserProfile,
     ): Promise<any[]> {
         return await this.transactionRepository.find({
             where: {
-                nftId: idNft,
+                nftId,
                 type: {nin: [TRANSACTION_TYPES.UPDATE_AUCTION_PRICE]},
                 status: {eq: TRANSACTION_STATUSES.SUCCESS}
             },
@@ -82,7 +84,7 @@ export class TransactionController {
         },
     })
     async getTransactionNft(
-        @param.query.object("id") idNft: string,
+        @param.path.string("id") idNft: string,
         @inject(SecurityBindings.USER)
             currentUserProfile: UserProfile,
     ): Promise<any[]> {

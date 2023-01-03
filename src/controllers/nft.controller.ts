@@ -12,6 +12,7 @@ import {NFTRepository} from "../repositories/nft.repository";
 import {NFT} from "../models/nft.model";
 import {TransactionRepository} from "../repositories/transaction.repository";
 import {TRANSACTION_STATUSES, TRANSACTION_TYPES} from "../models/transaction.model";
+import {InappNotificationRepository} from "../repositories/inapp-notification.repository";
 
 const ObjectId = require("objectid")
 
@@ -23,6 +24,7 @@ export class NFTController {
         public user: UserProfile,
         @repository(NFTRepository) protected nftRepository: NFTRepository,
         @repository(TransactionRepository) protected transactionRepository: TransactionRepository,
+        @repository(InappNotificationRepository) protected inappNotificationRepository: InappNotificationRepository,
     ) { }
 
     @authenticate('jwt')
@@ -271,6 +273,15 @@ export class NFTController {
                 nftId: oldNft.id,
             }
             await this.transactionRepository.create(newTransaction)
+            const inappNotifi = {
+                ...newTransaction,
+                userId: oldNft?.userId,
+                fileUrl: oldNft?.fileUrl,
+                nftName: oldNft?.name,
+                nftPrice: oldNft?.price,
+                createAt: new Date(),
+            }
+            await this.inappNotificationRepository.create(inappNotifi)
         } else if (buyer && price && buyerId) {
             const newTransaction = {
                 price,

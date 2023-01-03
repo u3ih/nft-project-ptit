@@ -22,8 +22,11 @@ import { MongoDbDataSource } from './datasources';
 import { MySequence } from './sequence';
 import {AuthenticationUserService} from "./services";
 import {STORAGE_DIRECTORY} from "./keys";
+import {SYSTEM_JOBS} from "./jobs";
+import {SocketIoServer} from "./websocket.server";
+import {SocketIoBindings} from "@loopback/socketio";
 export { ApplicationConfig };
-var path = require('path');
+const path = require('path');
 const UPLOAD_URL_PATH = "/upload";
 const getPathUpload = (): string => {
   return "public/upload";
@@ -32,6 +35,7 @@ const getPathUpload = (): string => {
 export class MyAppApplication extends BootMixin(
   ServiceMixin(RepositoryMixin(RestApplication)),
 ) {
+  private socketServer: SocketIoServer;
   constructor(options: ApplicationConfig = {}) {
     super(options);
 
@@ -53,14 +57,9 @@ export class MyAppApplication extends BootMixin(
       controllers: {
         // Customize ControllerBooter Conventions here
         dirs: ['controllers'],
-        extensions: ['.controller.js'],
+        extensions: ['.controller.js', "controller.ts"],
         nested: true,
       },
-      // socketioControllers: {
-      //   dirs: ["ws-controllers"],
-      //   extensions: [".controller.js", ".controller.ts"],
-      //   nested: true,
-      // },
       datasources: {
         dirs: ["datasources"],
         extensions: [".datasource.js", ".datasource.ts"],
@@ -79,10 +78,27 @@ export class MyAppApplication extends BootMixin(
     // @ts-ignore
     this.bind(UserServiceBindings.USER_SERVICE).toClass(AuthenticationUserService);
     //new
-    // this.bind(UserServiceBindings.USER_SERVICE).toClass(MyUserService);
+    this.bindingJobs();
+    this.socketServer = new SocketIoServer(this);
+    this.socketServer.use((socket, next) => {
+      next();
+    });
+    this.bind(SocketIoBindings.SERVER).to(this.socketServer as any);
   }
+  bindingJobs(): void {
+    SYSTEM_JOBS.forEach((job: any) => {
+      this.add(job);
+    });
+  }
+
   protected configureFileUpload() {
     const destination: string = "public/upload";
     this.bind(STORAGE_DIRECTORY).to(destination);
   }
+
+  start = async (): Promise<void> => {
+    await super.start();
+    await this.socketServer.start(this.restServer.httpServer);
+  };
+
 }
