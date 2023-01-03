@@ -1,17 +1,9 @@
 import ClientHome from "../components/home";
-import React, {useEffect} from "react";
+import React from "react";
 import ClientMainLayout from "../components/layout/client-layout";
-import {useLoadNftsFormContract} from "../src/hook/nft-hook";
 
 const Home = () => {
-  const loadNftsFormContract = useLoadNftsFormContract();
-  useEffect(() => {
-    const handlefetch = async () => {
-      const a = await loadNftsFormContract();
-      console.log("a: ", a);
-    }
-    handlefetch();
-  }, [])
+
   return (
     <ClientHome />
   )

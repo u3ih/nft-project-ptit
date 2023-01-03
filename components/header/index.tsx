@@ -8,13 +8,15 @@ import {useGetUserAddress, useGetUserData, useGetWeb3} from "../../src/hook";
 import cls from "classnames";
 import {Button, Drawer, message} from "antd";
 import {useRouter} from "next/router";
+import NotificationDrawer from "./notification-drawer";
 
-const Header = () => {
+const Header = (props: any) => {
   const getWeb3 = useGetWeb3();
   const userInfo = useGetUserData();
   const [web3, setWeb3] = useState<any>();
   const [myBalance, setMyBalance] = useState<string>();
   const {reload} = useRouter();
+  const {isHiddenLogo = false} = props;
 
   const handleClickConnectWallet = async () => {
     const web3 = await getWeb3();
@@ -43,12 +45,14 @@ const Header = () => {
 
   return (
     <div className={style.wrapper}>
-      <Link href="/">
-        <div className={style.logoContainer}>
-          <Image src={"/assets/images/opensea.png"} height={40} width={40} alt={"img"}/>
-          <div className={style.logoText}>Hiếu market</div>
-        </div>
-      </Link>
+      {!isHiddenLogo && (
+          <Link href="/">
+            <div className={style.logoContainer}>
+              <Image src={"/assets/images/opensea.png"} height={40} width={40} alt={"img"}/>
+              <div className={style.logoText}>Hiếu market</div>
+            </div>
+          </Link>
+      )}
       <div className={cls(style.headerItem, "flex items-center")}>
         {!userInfo?.id ? (
           <Button {...{
@@ -81,6 +85,7 @@ const Header = () => {
         <div className={style.headerItem}>
           <Link href="/create-my-nft">Create Nft</Link>
         </div>
+        <NotificationDrawer />
         <div className={style.headerIcon}>
           <UserDropdown />
         </div>

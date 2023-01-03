@@ -9,17 +9,30 @@ import {
   useHandleFetchUserDataByAddress,
 } from "../src/hook";
 import { wrapper } from '../src/redux/store';
+import {useConnectSocket, useGetSocket} from "../src/hook/socket-hook";
 
 const MyComponent = ({ Component, pageProps }: any) => {
   const userAddress = useGetUserAddress();
   const fetchUserDataByAddress = useHandleFetchUserDataByAddress();
   const getWeb3 = useGetWeb3();
+  const connectSocket = useConnectSocket();
+  const socket = useGetSocket();
+
   useEffect(() => {
+    if(socket) {
+      return;
+    }
     const reConnect = async () => {
       await getWeb3();
+      await connectSocket();
     }
     reConnect();
-  })
+    return () => {
+      if (socket) {
+        socket.disconnect();
+      }
+    }
+  }, [])
 
   useEffect(() => {
     const connect = async () => {

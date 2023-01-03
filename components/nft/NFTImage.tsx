@@ -4,7 +4,6 @@ import React from "react";
 
 const NFTImage = (props: any) => {
   const { selectedNft } = props;
-  console.log("selectedNft: ", selectedNft);
   return (
     <div className={"rounded-2xl overflow-hidden shadow-md "}>
       <div className={"flex justify-center items-center"}>

@@ -2,6 +2,7 @@ import { Marketplace as MarketplaceContractType, UserID as UserContractType } fr
 import * as t from "../types";
 
 interface IStateProps {
+  socket?: any;
   userAddress?: string;
   marketplaceContract?: any;
   userContract?: any;
@@ -51,6 +52,17 @@ const main = (state: IStateProps, action: any) => {
       return {
         userInfo: state?.userInfo,
       };
+    }
+    case t.SET_USER_SOCKET: {
+      return {
+        ...state,
+        socket: action.payload.socket,
+      }
+    }
+    case t.GET_USER_SOCKET: {
+      return {
+        socket: state?.socket,
+      }
     }
     default:
       return { ...state };

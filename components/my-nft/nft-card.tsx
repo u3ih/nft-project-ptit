@@ -78,9 +78,9 @@ const NftCard = (props: {nft: any, isOwner?: boolean, avatarOwner: string, showR
                         }}/>
                     </div>
                 )}
-              {!isOwner && !isAuction && <button className="mt-4 w-full bg-[#ff9614de] text-white font-bold py-2 px-12 rounded-[10px] border-0 hover:cursor-pointer hover:opacity-50 transition ease-in-out duration-300" onClick={() => buyNft(nft)}>Mua</button>}
               </div>
           </div>
+            {!isOwner && !isAuction && <button className="mt-4 w-full bg-[#ff9614de] text-white font-bold py-2 px-12 rounded-[10px] border-0 hover:cursor-pointer hover:opacity-50 transition ease-in-out duration-300" onClick={() => buyNft(nft)}>Mua</button>}
             {showReListNftBtn && <button className="mt-4 w-full bg-[#ff9614de] text-white font-bold py-2 px-12 rounded-[10px] border-0 hover:cursor-pointer hover:opacity-50 transition ease-in-out duration-300" onClick={() => listNFT(nft)}>Mở bán lại</button>}
             {!isOwner && isAuction && (
                 <button className="mt-4 w-full bg-[#ff9614de] text-white font-bold py-2 px-12 rounded-[10px] border-0 hover:cursor-pointer hover:opacity-50 transition ease-in-out duration-300" onClick={() => setVisible(true)}>Đấu giá</button>

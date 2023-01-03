@@ -44,7 +44,6 @@ const ItemActivity = (props: any) => {
         url: `transactions/nft-detail/${selectedNft?.id}`
       }
       const res = await doRequest(network);
-      console.log("res: ", res);
       setTransactionNfts(res)
     }
     fetchTransaction();

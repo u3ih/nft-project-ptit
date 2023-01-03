@@ -68,6 +68,11 @@ export const useGetUserAddress = () => {
         });
 }
 
+export const useIsAdmin = () => {
+    const userInfo = useGetUserData();
+    return userInfo?.role?.includes("ADMIN");
+}
+
 export const useSetMarketplaceContract = () => {
     const dispatch = useDispatch();
     return (marketplaceContract: any) => {
