@@ -2,10 +2,19 @@ import React from "react";
 import NftDetail from "../../components/nft";
 import ClientMainLayout from "../../components/layout/client-layout";
 import {doRequest} from "../../src/common/do-request";
+import Head from "next/head";
 
 const Nft = (props: any) => {
   return (
-    <NftDetail nftDetail={props}/>
+      <>
+        <Head>
+          <title>{props?.name}</title>
+          <meta property="og:title" content={props?.name} key="title" />
+        </Head>
+        <NftDetail {...{
+          nftDetail: props
+        }}/>
+      </>
   )
 }
 

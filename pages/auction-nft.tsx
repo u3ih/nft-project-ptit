@@ -1,10 +1,17 @@
 import React from "react";
 import ClientMainLayout from "../components/layout/client-layout";
 import AuctionNftClient from "../components/auction-nft";
+import Head from "next/head";
 
 const AuctionNft = () => {
     return (
-        <AuctionNftClient />
+        <>
+            <Head>
+                <title>Auction NFT</title>
+                <meta property="og:title" content="Auction NFT" key="title" />
+            </Head>
+            <AuctionNftClient />
+        </>
     )
 }
 

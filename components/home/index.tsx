@@ -5,8 +5,6 @@ import ListNFTs from './list-nfts';
 import {useGetSocket} from "../../src/hook/socket-hook";
 
 const ClientHome = () => {
-    const socket = useGetSocket();
-    console.log("socket: ",socket);
   return (
     <div className={"mb-[50px]"}>
       <Toaster position="top-center" reverseOrder={false} />

@@ -1,10 +1,17 @@
 import React from "react";
 import ClientMainLayout from "../components/layout/client-layout";
 import CreateNftItem from "../components/create-nft";
+import Head from "next/head";
 
 const CreateNft = () => {
   return (
-    <CreateNftItem />
+      <>
+        <Head>
+          <title>Create NFT</title>
+          <meta property="og:title" content="Create NFT" key="title" />
+        </Head>
+        <CreateNftItem />
+      </>
   )
 }
 

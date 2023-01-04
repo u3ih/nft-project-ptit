@@ -9,6 +9,7 @@ import cls from "classnames";
 import {Button, Drawer, message} from "antd";
 import {useRouter} from "next/router";
 import NotificationDrawer from "./notification-drawer";
+import {useGetSocket} from "../../src/hook/socket-hook";
 
 const Header = (props: any) => {
   const getWeb3 = useGetWeb3();

@@ -1,18 +1,50 @@
 import style from "./header.module.scss";
-import {Badge, Divider, Drawer, List, Skeleton} from "antd";
-import React, {useEffect, useState} from "react";
+import {Badge, Divider, Drawer, List, notification, Skeleton} from "antd";
+import React, {useEffect, useMemo, useState} from "react";
 import {BellOutlined} from "@ant-design/icons";
 import {doRequest} from "../../src/common/do-request";
 import InfiniteScroll from "react-infinite-scroll-component";
-import Image from "next/image";
 import dayjs from "dayjs";
+import {useGetSocket} from "../../src/hook/socket-hook";
 
 const NotificationDrawer = () => {
     const [openNotification, setOpenNotification] = useState(false);
-    const [notifications, setNotifications] = useState([]);
-    const showDrawer = () => {
+    const [notifications, setNotifications] = useState<any[]>([]);
+    const socket = useGetSocket();
+    const showDrawer = async () => {
+        const netWorkData = {
+            url: "notifications/me/mark-as-read"
+        }
+        await doRequest(netWorkData, "put");
+        const newNotiList: any[] = notifications?.map((noti: any) => {
+            return {
+                ...noti,
+                status: "read"
+            }
+        })
+        setNotifications(newNotiList)
         setOpenNotification(true);
     }
+
+    useEffect(() => {
+        if (!socket) {
+            return;
+        }
+        socket.on("new-notification", (payload: any) => {
+            const data = payload?.[0]?.data;
+            const newNotiList = [data, ...notifications];
+            setNotifications(newNotiList);
+            notification.success({message: "Bạn có thông báo mới", placement: "bottomRight"})
+        });
+        return () => {
+            socket.off("new-notification");
+        };
+    }, [socket]);
+
+    const unReadNoti = useMemo(() => {
+        return notifications.filter((noti: any) => noti?.status !== "read")?.length ?? 0;
+    }, [notifications])
+
     useEffect(() => {
         const handleFetchNoti = async () => {
             const netWorkdata = {
@@ -71,7 +103,7 @@ const NotificationDrawer = () => {
                     />
                 </InfiniteScroll>
             </Drawer>
-            <Badge count={notifications?.length ?? 0} overflowCount={9} size={"small"} >
+            <Badge count={unReadNoti} overflowCount={9} size={"small"} >
                 <BellOutlined style={{color: "white", fontSize: 20}} onClick={showDrawer} />
             </Badge>
         </div>

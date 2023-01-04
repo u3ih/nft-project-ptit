@@ -19,9 +19,6 @@ const MyComponent = ({ Component, pageProps }: any) => {
   const socket = useGetSocket();
 
   useEffect(() => {
-    if(socket) {
-      return;
-    }
     const reConnect = async () => {
       await getWeb3();
       await connectSocket();
