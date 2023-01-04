@@ -1,7 +1,7 @@
 import {belongsTo, Entity, model, property} from '@loopback/repository';
 import {User} from "./user.model";
 
-const NotiStatus = {
+export const NotiStatus = {
     NEW: "new",
     READ: "read"
 }

@@ -3,8 +3,14 @@ import { ApplicationConfig } from '@loopback/core';
 
 export { MyAppApplication };
 
+let app: any = null;
+
+export const getApplication = () => {
+  return app;
+};
+
 export async function main(options: ApplicationConfig = {}) {
-  const app = new MyAppApplication(options);
+  app = new MyAppApplication(options);
   await app.boot();
   await app.start();
 

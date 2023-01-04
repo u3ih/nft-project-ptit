@@ -145,6 +145,8 @@ export class SocketIoServer extends Context {
             meta = getSocketIoMetadata(controllerClass) as SocketIoMetadata;
         }
         const nsp = meta?.namespace ? this.io.of(meta.namespace) : this.io;
+        console.log("meta.name: ", meta);
+
         if (meta?.name) {
             this.app.bind(getNamespaceKeyForName(meta.name)).to(nsp);
         }

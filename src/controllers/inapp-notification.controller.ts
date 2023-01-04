@@ -10,7 +10,7 @@ import {
 } from '@loopback/rest';
 import { SecurityBindings, securityId, UserProfile } from '@loopback/security';
 import {InappNotificationRepository} from "../repositories/inapp-notification.repository";
-import {InappNotification} from "../models/inapp-notification.model";
+import {InappNotification, NotiStatus} from "../models/inapp-notification.model";
 
 export class InappNotificationController {
     constructor(
@@ -64,7 +64,38 @@ export class InappNotificationController {
         @inject(SecurityBindings.USER)
             currentUserProfile: UserProfile,
     ): Promise<any[]> {
-        return await this.inappNotificationRepository.find({where: {userId: currentUserProfile?.id}});
+        return await this.inappNotificationRepository.find({
+            where: {
+                userId: currentUserProfile?.id
+            },
+            order: ["createAt DESC"]
+        });
+    }
+
+    @authenticate('jwt')
+    @put('/notifications/me/mark-as-read', {
+        responses: {
+            '200': {
+                description: 'get notification',
+                content: {
+                    'application/json': {
+                    },
+                },
+            },
+        },
+    })
+    async markMyNotificationAsRead(
+        @inject(SecurityBindings.USER)
+            currentUserProfile: UserProfile,
+    ): Promise<void> {
+        const setNoti = {
+            status: NotiStatus.READ,
+        } as Partial<InappNotification>;
+        const filterNoti = {
+            userId: currentUserProfile?.id,
+            status: {nin: [NotiStatus.READ]}
+        }
+        await this.inappNotificationRepository.updateAll(setNoti,filterNoti);
     }
 
     @authenticate('jwt')
