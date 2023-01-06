@@ -25,6 +25,7 @@ import {STORAGE_DIRECTORY} from "./keys";
 import {SYSTEM_JOBS} from "./jobs";
 import {SocketIoServer} from "./websocket.server";
 import {SocketIoBindings} from "@loopback/socketio";
+import {CronComponent} from "@loopback/cron";
 export { ApplicationConfig };
 const path = require('path');
 const UPLOAD_URL_PATH = "/upload";
@@ -72,6 +73,8 @@ export class MyAppApplication extends BootMixin(
     this.component(AuthenticationComponent);
     // Mount jwt component
     this.component(JWTAuthenticationComponent);
+    // cronjob
+    this.component(CronComponent);
     // Bind datasource
     this.dataSource(MongoDbDataSource, UserServiceBindings.DATASOURCE_NAME);
     // ------------- END OF SNIPPET -------------

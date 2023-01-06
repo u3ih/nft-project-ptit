@@ -31,6 +31,11 @@ export class NFT extends Entity {
     })
     seller: string;
 
+    @property(
+        {type: 'string' }
+    )
+    buyer: string;
+
     @property({
         type: 'string',
     })

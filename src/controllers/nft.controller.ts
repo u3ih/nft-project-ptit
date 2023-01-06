@@ -13,6 +13,8 @@ import {NFT} from "../models/nft.model";
 import {TransactionRepository} from "../repositories/transaction.repository";
 import {TRANSACTION_STATUSES, TRANSACTION_TYPES} from "../models/transaction.model";
 import {InappNotificationRepository} from "../repositories/inapp-notification.repository";
+import {getMarketContract} from "../index";
+import {marketplaceAddress} from "../common/constant";
 
 const ObjectId = require("objectid")
 
@@ -293,7 +295,17 @@ export class NFTController {
                 nftId: oldNft.id,
             }
             await this.transactionRepository.create(newTransaction)
+            const inappNotifi = {
+                ...newTransaction,
+                userId: oldNft?.buyerId,
+                nftName: oldNft?.name,
+                fileUrl: oldNft?.fileUrl,
+                nftPrice: oldNft?.price,
+                createAt: new Date(),
+            }
+            await this.inappNotificationRepository.create(inappNotifi)
         }
+        console.log("requestNft: ", requestNft);
         return await this.nftRepository.updateById(id, {...requestNft});
     }
 }
