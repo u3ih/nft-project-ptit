@@ -5,11 +5,13 @@ import {BellOutlined} from "@ant-design/icons";
 import {doRequest} from "../../src/common/do-request";
 import InfiniteScroll from "react-infinite-scroll-component";
 import dayjs from "dayjs";
+import {useGetUserData} from "../../src/hook";
 import {useGetSocket} from "../../src/hook/socket-hook";
 
 const NotificationDrawer = () => {
     const [openNotification, setOpenNotification] = useState(false);
     const [notifications, setNotifications] = useState<any[]>([]);
+    const currentUser = useGetUserData();
     const socket = useGetSocket();
     const showDrawer = async () => {
         const netWorkData = {
@@ -32,6 +34,9 @@ const NotificationDrawer = () => {
         }
         socket.on("new-notification", (payload: any) => {
             const data = payload?.[0]?.data;
+            if(currentUser?.id !== data?.userId) {
+                return;
+            }
             const newNotiList = [data, ...notifications];
             setNotifications(newNotiList);
             notification.success({message: "Bạn có thông báo mới", placement: "bottomRight"})
@@ -40,9 +45,9 @@ const NotificationDrawer = () => {
             socket.off("new-notification");
         };
     }, [socket]);
-
     const unReadNoti = useMemo(() => {
-        return notifications.filter((noti: any) => noti?.status !== "read")?.length ?? 0;
+        if(!notifications?.length) return 0;
+        return notifications?.filter((noti: any) => noti?.status !== "read")?.length ?? 0;
     }, [notifications])
 
     useEffect(() => {
@@ -86,13 +91,21 @@ const NotificationDrawer = () => {
                                             className: "w-[40px] h-[40px]",
                                             alt: item?.nftName
                                         }}/>
-                                        {item?.type === "buy_nft" ? (
+                                        {item?.type === "buy_nft" && (
                                             <p>{item?.nftName} đã được bán với giá
                                                 <p>{item?.price} ETH</p>
                                             </p>
-                                        ) : (
+                                        )}
+                                        {item?.type === "update_auction_price" && (
                                             <p>{item?.nftName} vừa được đấu giá
                                                 <p>{item?.price} ETH</p>
+                                            </p>
+                                        )}
+                                        {item?.type === "auction_success" && (
+                                            <p>
+                                                Bạn đấu giá thành công {item?.nftName}
+                                                <p>với số tiền {item?.price} ETH</p>
+                                                vào nhận ngay
                                             </p>
                                         )}
                                     </div>

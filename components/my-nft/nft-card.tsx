@@ -6,22 +6,22 @@ import {useRouter} from "next/router";
 import dayjs from "dayjs";
 import Countdown from 'react-countdown';
 import Link from "next/link";
-import {useAuctionNft, useBuyNft} from "../../src/hook/nft-hook";
+import {useAuctionNft, useBuyNft, useEndAuctionNft} from "../../src/hook/nft-hook";
 
-const NftCard = (props: {nft: any, isOwner?: boolean, avatarOwner: string, showReListNftBtn?: string}) => {
-  const {nft, avatarOwner, isOwner = false, showReListNftBtn = false} = props;
+const NftCard = (props: {nft: any, isOwner?: boolean, avatarOwner: string, showReListNftBtn?: string, getSuccessAuction?: boolean}) => {
+  const {nft, avatarOwner, isOwner = false, showReListNftBtn = false, getSuccessAuction} = props;
   const buyNft = useBuyNft();
   const auctionNft = useAuctionNft();
+  const endAuctionNft = useEndAuctionNft();
   const [form] = Form.useForm();
   const [visible, setVisible] = useState(false);
   const handleAuctionNft = async (nft: any) => {
       await form.validateFields();
     const auctionPrice = form.getFieldValue("auctionPrice");
-    window.location.href = "/auction-nft"
     try {
-    await auctionNft({...nft, auctionPrice})
-    setVisible(false);
-    message.success("Thành công")
+        await auctionNft({...nft, auctionPrice})
+        setVisible(false);
+        message.success("Thành công")
     } catch (e: any) {
         message.error(e?.message);
     }
@@ -35,6 +35,12 @@ const NftCard = (props: {nft: any, isOwner?: boolean, avatarOwner: string, showR
         return Number(nft?.price) + Number(nft?.minJumpPrice);
     }, [nft])
 
+    const isEndTime = useMemo(() => {
+        return dayjs().isAfter(nft?.timeEndAuction);
+    }, [nft])
+    const handleGetSuctionNFT = async () => {
+          await endAuctionNft({...nft})
+    }
   return (
         <div className={styles["wrapper-nft-card"]}>
             <Link href={`nfts/${nft?.id}`}>
@@ -82,8 +88,11 @@ const NftCard = (props: {nft: any, isOwner?: boolean, avatarOwner: string, showR
           </div>
             {!isOwner && !isAuction && <button className="mt-4 w-full bg-[#ff9614de] text-white font-bold py-2 px-12 rounded-[10px] border-0 hover:cursor-pointer hover:opacity-50 transition ease-in-out duration-300" onClick={() => buyNft(nft)}>Mua</button>}
             {showReListNftBtn && <button className="mt-4 w-full bg-[#ff9614de] text-white font-bold py-2 px-12 rounded-[10px] border-0 hover:cursor-pointer hover:opacity-50 transition ease-in-out duration-300" onClick={() => listNFT(nft)}>Mở bán lại</button>}
-            {!isOwner && isAuction && (
+            {!isOwner && isAuction && !isEndTime && (
                 <button className="mt-4 w-full bg-[#ff9614de] text-white font-bold py-2 px-12 rounded-[10px] border-0 hover:cursor-pointer hover:opacity-50 transition ease-in-out duration-300" onClick={() => setVisible(true)}>Đấu giá</button>
+            )}
+            {isEndTime && getSuccessAuction && (
+                <button className="mt-4 w-full bg-[#ff9614de] text-white font-bold py-2 px-12 rounded-[10px] border-0 hover:cursor-pointer hover:opacity-50 transition ease-in-out duration-300" onClick={handleGetSuctionNFT}>Lấy NFT</button>
             )}
             <Modal title="Đặt giá" open={visible} onOk={() => handleAuctionNft(nft)} onCancel={() => setVisible(false)}>
                 <Form form={form} layout={"vertical"} >

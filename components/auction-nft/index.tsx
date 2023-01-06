@@ -56,7 +56,8 @@ const AuctionNftClient = () => {
                         key: 'auction-my-nft',
                         children: (
                             <ListNft {...{
-                                nfts: itemsMyBuyingAuction
+                                nfts: itemsMyBuyingAuction,
+                                getSuccessAuction: true,
                             }}/>
                         ),
                     },

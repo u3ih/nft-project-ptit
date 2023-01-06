@@ -46,7 +46,7 @@ export const useCreateNft = () => {
     }
 }
 
-export const useLoadNftsFormContract = () => {
+export const useLoadNftsFromContract = () => {
     const provider = new ethers.providers.JsonRpcProvider(DOMAIN_CHAIN_CONFIG)
     const contract = new ethers.Contract(marketplaceAddress, Marketplace.abi, provider)
     return async () => {
@@ -65,6 +65,7 @@ export const useLoadNftsFormContract = () => {
             }
             const price = ethers.utils.formatUnits(i.price.toString(), 'ether')
             const item = {
+                ...i,
                 price,
                 tokenId: Number(i.tokenId),
                 seller: i.seller,
@@ -133,6 +134,7 @@ export const useLoadMyNftsFormContract = () => {
             const meta = await axios.get(tokenURI)
             const price = ethers.utils.formatUnits(i.price.toString(), 'ether')
             const item = {
+                ...i,
                 price,
                 tokenId: Number(i.tokenId),
                 seller: i.seller,
@@ -207,6 +209,7 @@ export const useResellNft = () => {
 export const useAuctionNft = () => {
     const userInfo = useGetUserData();
     const getMarketplaceContract = useGetMarketplaceContract();
+    const {reload} = useRouter();
     return async (nft: { auctionPrice: any, tokenId: string, id: string }) => {
         const marketplaceContract = await getMarketplaceContract();
         if (!nft || !userInfo || !marketplaceContract) {
@@ -224,7 +227,36 @@ export const useAuctionNft = () => {
                 buyerId: userInfo?.id,
             }
         }
-        await doRequest(requestNftInfo, "put")
+        await doRequest(requestNftInfo, "put");
+        await reload();
+        } catch (e: any) {
+            notification.error({message: e?.message})
+        }
+    }
+}
+
+export const useEndAuctionNft = () => {
+    const userInfo = useGetUserData();
+    const getMarketplaceContract = useGetMarketplaceContract();
+    const {reload} = useRouter();
+    return async (nft: { auctionPrice: any, tokenId: string, id: string }) => {
+        const marketplaceContract = await getMarketplaceContract();
+        if (!nft || !userInfo || !marketplaceContract) {
+            return;
+        }
+        try {
+            await marketplaceContract.methods.endAuctionSection(nft.tokenId).send({ from: userInfo?.userAddress })
+            const requestNftInfo = {
+                url: `nfts/${nft?.id}`,
+                body: {
+                    userId: userInfo?.id,
+                    owner: userInfo?.userAddress,
+                    sold: true,
+                    isAuction: false,
+                }
+            }
+            await doRequest(requestNftInfo, "put");
+            await reload();
         } catch (e: any) {
             notification.error({message: e?.message})
         }
