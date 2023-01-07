@@ -7,7 +7,6 @@ import {
     Response,
     RestBindings,
 } from '@loopback/rest';
-import { authenticate } from "@loopback/authentication";
 import {FileService} from "../services/file.service";
 /**
  * A controller to handle file uploads using multipart/form-data media type

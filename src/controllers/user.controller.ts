@@ -67,10 +67,23 @@ export class UserController {
     },
   })
   async getAll(
+      @param.query.string("username") username: string,
       @inject(SecurityBindings.USER)
           currentUserProfile: UserProfile,
   ): Promise<any[]> {
-    return await this.userRepository.find();
+    let filter;
+    if(!!username) {
+      const pattern = new RegExp(
+          '.*' + username + '.*',
+          'i',
+      ); /* case-insensitive RegExp search */
+      filter = {
+        where: {
+          username: {like: pattern}
+        }
+      }
+    }
+    return await this.userRepository.find(filter);
   }
 
   @authenticate('jwt')

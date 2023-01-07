@@ -3,13 +3,15 @@ import {
     TokenServiceBindings,
 } from '@loopback/authentication-jwt';
 import {inject} from '@loopback/core';
-import {repository} from '@loopback/repository';
+import {Filter, repository} from '@loopback/repository';
 import {
     get, param,
 } from '@loopback/rest';
 import { SecurityBindings, securityId, UserProfile } from '@loopback/security';
 import {TransactionRepository} from "../repositories/transaction.repository";
 import {TRANSACTION_STATUSES, TRANSACTION_TYPES} from "../models/transaction.model";
+import {NFT} from "../models/nft.model";
+import dayjs from "dayjs";
 
 const ObjectId = require("objectid");
 
@@ -95,5 +97,41 @@ export class TransactionController {
             },
             order: ["date DESC"]
         });
+    }
+
+    @authenticate('jwt')
+    @get('/transactions/statistic/{time}', {
+        responses: {
+            '200': {
+                description: 'Return transaction',
+                content: {
+                    'application/json': {},
+                },
+            },
+        },
+    })
+    async statisticTransaction(
+        @param.path.string("time") time: "day" | "week" | "month" | "all",
+        @inject(SecurityBindings.USER)
+            currentUserProfile: UserProfile,
+    ): Promise<any> {
+        const today = dayjs();
+        let rangeTime;
+        const advanceWhere: any = {
+            status: {nin: [TRANSACTION_STATUSES.INACTIVE]},
+        }
+        if(time !== "all") {
+            rangeTime = today.subtract(1, time);
+            advanceWhere.date = {gte: rangeTime?.toDate()};
+        }
+
+        const transactions = await this.transactionRepository.find({
+            where: advanceWhere,
+            order: ["date DESC"]
+        });
+        const totalVol = transactions.reduce((prevValue, currValue) => {
+            return prevValue + Number(currValue?.price);
+        }, 0)
+        return {totalVol, data: transactions};
     }
 }

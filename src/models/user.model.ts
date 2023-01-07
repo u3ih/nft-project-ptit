@@ -34,6 +34,12 @@ export class User extends Entity {
 
   @property({
     type: 'string',
+    default: new Date(),
+  })
+  createdAt: string;
+
+  @property({
+    type: 'string',
   })
   dateOfBirth: string;
 

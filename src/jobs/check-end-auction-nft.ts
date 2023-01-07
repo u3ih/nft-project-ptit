@@ -42,7 +42,7 @@ class AuctionNftTracking extends CronJob {
                 )
             },
             // cronTime: "0 0 0 * * *",  //will run every day at 12:00 AM
-             cronTime: "*/5 * * * *", // Every 5 minute,
+             cronTime: "* * * * *", // Every 1 minute,
             start: false,
         });
     }

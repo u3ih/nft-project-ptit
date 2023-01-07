@@ -5,7 +5,7 @@ import {
 import {inject, service} from '@loopback/core';
 import {Filter, repository} from '@loopback/repository';
 import {
-    get, param, post, put, requestBody,
+    get, HttpErrors, param, post, put, requestBody,
 } from '@loopback/rest';
 import { SecurityBindings, securityId, UserProfile } from '@loopback/security';
 import {NFTRepository} from "../repositories/nft.repository";
@@ -15,6 +15,7 @@ import {TRANSACTION_STATUSES, TRANSACTION_TYPES} from "../models/transaction.mod
 import {InappNotificationRepository} from "../repositories/inapp-notification.repository";
 import {getMarketContract} from "../index";
 import {marketplaceAddress} from "../common/constant";
+import * as HTTP from "http";
 
 const ObjectId = require("objectid")
 
@@ -196,10 +197,23 @@ export class NFTController {
         },
     })
     async getAll(
+        @param.query.string("name") name: string,
         @inject(SecurityBindings.USER)
             currentUserProfile: UserProfile,
     ): Promise<any[]> {
-        return await this.nftRepository.find();
+        let filter;
+        if(!!name) {
+            const pattern = new RegExp(
+                '.*' + name + '.*',
+                'i',
+            ); /* case-insensitive RegExp search */
+            filter = {
+                where: {
+                    name: {like: pattern}
+                }
+            }
+        }
+        return await this.nftRepository.find(filter as any);
     }
 
     @get('/nfts/{id}', {
@@ -305,7 +319,25 @@ export class NFTController {
             }
             await this.inappNotificationRepository.create(inappNotifi)
         }
-        console.log("requestNft: ", requestNft);
         return await this.nftRepository.updateById(id, {...requestNft});
+    }
+
+    @authenticate('jwt')
+    @put('/nfts/like/{id}', {
+        responses: {
+        },
+    })
+    async userLikeNFT(
+        @inject(SecurityBindings.USER)
+            currentUserProfile: UserProfile,
+        @param.path.string("id") id: string,
+    ): Promise<any> {
+        const oldNft = await this.nftRepository.findById(id);
+        const oldLikes = oldNft?.likes ?? [];
+        if(oldLikes.includes(currentUserProfile?.id)) {
+            throw new HttpErrors.BadRequest("Bạn đã thích NFT này rồi");
+        }
+        oldLikes.push(currentUserProfile?.id);
+        await this.nftRepository.updateById(id, { likes: oldLikes } as any);
     }
 }
