@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import {Table} from "antd";
+import {Input, Table} from "antd";
 import {doRequest} from "../../src/common/do-request";
 import dayjs from "dayjs";
 
@@ -39,18 +39,27 @@ const columns = [
 
 const NFTManagement = () => {
     const [nfts, setNFTs] = useState();
-    useEffect(() => {
-        const fetchUser = async () => {
-            const netWork = {
-                url: "/nfts/all"
-            }
-            const items = await doRequest(netWork)
-            setNFTs(items);
+    const handlefetchNFT = async (name?: string) => {
+        const netWork = {
+            url: `/nfts/all?name=${name ?? ''}`
         }
-        fetchUser();
+        const items = await doRequest(netWork)
+        setNFTs(items);
+    }
+    useEffect(() => {
+        handlefetchNFT();
     }, [])
     return (
-        <Table dataSource={nfts} columns={columns} />
+        <div className={"mt-[15px] flex flex-col gap-[20px]"}>
+            <Input.Search
+                placeholder="Nhập tên NFT"
+                allowClear
+                enterButton="Search"
+                size="large"
+                onSearch={handlefetchNFT}
+            />
+            <Table dataSource={nfts} columns={columns} />
+        </div>
     )
 }
 

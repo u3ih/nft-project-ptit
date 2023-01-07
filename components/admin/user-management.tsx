@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import {Table} from "antd";
+import {Input, Table} from "antd";
 import {doRequest} from "../../src/common/do-request";
 import dayjs from "dayjs";
 
@@ -22,7 +22,7 @@ const columns = [
         dataIndex: 'dateOfBirth',
         key: 'dateOfBirth',
         render: (dateOfBirth: any) => {
-            return dayjs(dateOfBirth).format("DD/MM/YYYY, hh:mm:ss")
+            return dateOfBirth && dayjs(dateOfBirth).format("DD/MM/YYYY, hh:mm:ss")
         }
     },
     {
@@ -39,18 +39,27 @@ const columns = [
 
 const UserManagement = () => {
     const [users, setUser] = useState();
-    useEffect(() => {
-        const fetchUser = async () => {
-            const netWork = {
-                url: "/users"
-            }
-            const items = await doRequest(netWork)
-            setUser(items);
+    const handlefetchUser = async (username?: string) => {
+        const netWork = {
+            url: `/users?username=${username ?? ''}`
         }
-        fetchUser();
+        const items = await doRequest(netWork)
+        setUser(items);
+    }
+    useEffect(() => {
+        handlefetchUser();
     }, [])
     return (
-        <Table dataSource={users} columns={columns} />
+        <div className={"mt-[15px] flex flex-col gap-[20px]"}>
+            <Input.Search
+                placeholder="Nhập tên user"
+                allowClear
+                enterButton="Search"
+                size="large"
+                onSearch={handlefetchUser}
+            />
+            <Table dataSource={users} columns={columns} />
+        </div>
     )
 }
 
